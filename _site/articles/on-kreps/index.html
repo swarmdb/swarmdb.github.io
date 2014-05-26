@@ -1,0 +1,337 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Logs and docs &#8211; Swarm.js</title>
+<meta name="description" content="How we outdid Google">
+<meta name="keywords" content="">
+
+<!-- Twitter Cards -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://localhost:4000/images/logs-wide.jpg">
+
+<meta name="twitter:title" content="Logs and docs">
+<meta name="twitter:description" content="How we outdid Google">
+<meta name="twitter:creator" content="@gritzko">
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Logs and docs">
+<meta property="og:description" content="How we outdid Google">
+<meta property="og:url" content="http://localhost:4000/articles/on-kreps/">
+<meta property="og:site_name" content="Swarm.js">
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/articles/on-kreps/">
+<link href="http://localhost:4000/feed.xml" type="application/atom+xml" rel="alternate" title="Swarm.js Feed">
+
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="http://localhost:4000/assets/css/main.min.css">
+<!-- Webfonts -->
+<script src="//use.edgefonts.net/source-sans-pro:n2,i2,n3,i3,n4,i4,n6,i6,n7,i7,n9,i9;source-code-pro:n4,n7;volkhov.js"></script>
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- Load Modernizr -->
+<script src="http://localhost:4000/assets/js/vendor/modernizr-2.6.2.custom.min.js"></script>
+
+<!-- Icons -->
+<!-- 16x16 -->
+<link rel="shortcut icon" href="http://localhost:4000/favicon.ico">
+<!-- 32x32 -->
+<link rel="shortcut icon" href="http://localhost:4000/favicon.png">
+<!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+<link rel="apple-touch-icon-precomposed" href="http://localhost:4000/images/apple-touch-icon-precomposed.png">
+<!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="http://localhost:4000/images/apple-touch-icon-72x72-precomposed.png">
+<!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="http://localhost:4000/images/apple-touch-icon-114x114-precomposed.png">
+<!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://localhost:4000/images/apple-touch-icon-144x144-precomposed.png">
+
+</head>
+
+<body id="post">
+
+<div class="navigation-wrapper">
+	<nav role="navigation" id="site-nav" class="animated drop">
+	    <ul>
+	        
+			<li>
+				
+					<a href="http://localhost:4000/about/">About</a>
+				 
+			</li>
+	        
+			<li>
+				
+					<a href="http://localhost:4000/articles/">Articles</a>
+				 
+			</li>
+	        
+			<li>
+				
+					<a href="http://localhost:4000/theme-setup/">Theme Setup</a>
+				 
+			</li>
+	        
+			<li>
+				
+					<a href="http://github.com/gritzko/swarm">GitHub</a>
+				 
+			</li>
+	        
+	        <li><a href="http://localhost:4000/feed.xml" title="Atom/RSS feed"><i class="icon-rss"></i> Feed</a></li>
+	        <li class="dosearch"><i class="icon-search"></i> Search</li>
+	    </ul>
+	</nav>
+</div><!-- /.navigation-wrapper -->
+
+<!--[if lt IE 9]><div class="upgrade"><strong><a href="http://whatbrowser.org/">Your browser is quite old!</strong> Why not upgrade to a different browser to better enjoy this site?</a></div><![endif]-->
+
+<div class="search-wrapper">
+	<div class="search-form">
+		<input type="text" class="search-field" placeholder="Search...">
+		<i class="icon-remove-sign icon-2x"></i>
+		<ul class="search-results post-list"></ul><!-- /.search-results -->
+	</div><!-- /.search-form -->
+</div><!-- ./search-wrapper -->
+
+<header class="masthead">
+	
+		<div class="wrap">
+			<a href="http://localhost:4000/" class="site-logo" rel="home" title="Swarm.js"><img src="http://localhost:4000/images/site-logo.png" width="200" height="200" alt="Swarm.js logo" class="animated bounceInDown"></a>
+		</div>
+	
+</header><!-- /.masthead -->
+
+
+
+<div id="main" role="main">
+  <article class="hentry">
+    <img src="http://localhost:4000/images/logs-wide.jpg" class="entry-feature-image" alt="Logs and docs" ><p class="image-credit">Photo Credit: <a href="http://mademistakes.com">Michael Rose</a>
+    <div class="entry-wrapper">
+      <header class="entry-header">
+        <span class="entry-tags"></span>
+        
+          <h1 class="entry-title">Logs and docs</h1>
+        
+      </header>
+      <footer class="entry-meta">
+        <img src="http://localhost:4000/images/selfie.jpg" alt="Victor Grishchenko photo" class="author-photo">
+        <span class="author vcard">By <span class="fn"><a href="http://localhost:4000/about/" title="About Victor Grishchenko">Victor Grishchenko</a></span></span>
+        <span class="entry-date date published"><time datetime="2013-12-17T00:00:00-05:00"><i class="icon-calendar-empty"></i> December 17, 2013</time></span>
+        <span class="entry-date date modified"><time datetime="2013-05-31"><i class="icon-pencil"></i> May 31, 2013</time></span>
+        
+        <span><a href="http://localhost:4000/articles/on-kreps/" rel="bookmark" title="Logs and docs"><i class="icon-link"></i> Permalink</a></span>
+        
+        <span class="social-share-facebook">
+            <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/articles/on-kreps/" title="Share on Facebook" itemprop="Facebook"><i class="icon-facebook-sign"></i> Like</a></span>
+        <span class="social-share-twitter">
+            <a href="https://twitter.com/intent/tweet?hashtags=articles&text=Logs and docs&url=http://localhost:4000/articles/on-kreps/&via=gritzko" title="Share on Twitter" itemprop="Twitter"><i class="icon-twitter-sign"></i> Tweet</a></span>
+        <span class="social-share-googleplus">
+            <a href="https://plus.google.com/share?url=http://localhost:4000/articles/on-kreps/" title="Share on Google Plus" itemprop="GooglePlus"><i class="icon-google-plus-sign"></i> +1</a></span>
+            <!-- /.social-share -->
+      </footer>
+      <div class="entry-content">
+        <p>Jay Kreps of LinkedIn recently made an excellent detailed 
+<a href="http://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying">360° overview post</a>
+explaining why <em>log</em> is an underlying data structure of pretty
+much everything in distributed systems. Well, I feel tempted to add
+that same holds true for collaborative editing (like in Google Docs
+and others). Also, I’d like to point out the relation between
+partially ordered logs, the 
+<a href="http://alistapart.com/article/offline-first">offline</a>-<a href="http://developer.chrome.com/apps/offline_apps.html">first</a>
+approach, <a href="http://en.wikipedia.org/wiki/CAP_theorem">AP</a> systems and the
+so-called Web 3.0 (like in <a href="http://meteor.com/">Meteor</a>,
+<a href="http://pouchdb.com/">pouchdb</a>.
+Any real-time approach to collaborative editing
+decomposes a document into a sequence of atomic operations. The most
+known one is
+<a href="http://en.wikipedia.org/wiki/Operational_transformation">OT</a>,
+also there is
+the WOOT/CRDT based family, including
+<a href="http://bouillon.math.usu.ru/articles/ctre.pdf">CT</a>. GDocs is an OT
+system. I did a CT system currently in beta at 
+<a href="http://letters.yandex.ru">letters.yandex.ru</a>.</p>
+
+<p>Note that
+<em>letters</em> is a tiny pilot project which is totally incomparable
+to GDocs in terms of man-years spent (I expect at least two orders of
+magnitude difference; three is even more likely). Still,
+<em>letters</em> works offline effortlessly from the day one; if your
+WiFi flaps badly, you may not even notice that. GDocs implemented
+offline mode after some years of work and it works sorta conditionally
+(i.e. there are caveats, like a native extension is needed and the
+browser must be Chrome). This villariba-villabajo story definitely
+deserves some explanation. </p>
+
+<p>In a
+real-time collaborative editor, concurrent operations come “faster”
+than they are propagated so it is no longer possible to pretend there
+is any linear order of events (which doesn’t exist in distributed
+systems anyway). Hence, OT <em>transforms</em> operations to achieve
+the same final text independently of their partial order. Because of
+transformations and cross-dependencies, operations become entangled
+and complexity snowballs.</p>
+
+<p>Meanwhile, the CT borrows some serious tricks from the
+land of hardcore distributed systems, namely (1) 
+<a href="http://www.cs.rutgers.edu/~pxk/417/notes/clocks/index.html">Lamport timestamps</a>
+(2) <a href="http://en.wikipedia.org/wiki/Vector_clock">vector clocks</a>
+and (3) <a href="http://en.wikipedia.org/wiki/Partially_ordered_set">partially ordered</a>
+logs of immutable operations. Attaching a timestamp to every letter
+seems a pipe dream in the beginning, but it works quite well in
+practice. Having 100KB of text instead of 10KB is not a major
+burden. Regarding less-ordered operation logs, Mr Kreps
+mentions them in the context of hardcore AP systems and 
+<a href="http://www.read.seas.harvard.edu/~kohler/class/cs239-w08/decandia07dynamo.pdf">Amazon
+Dynamo</a>
+in particular. These logs are trickier to use as they require
+application-specific reconciliation, but such a system scales much
+much better. (That’s why I’ll never buy MongoDB’s “humongous”
+scalability claims. Turn it that way or another, but MongoDB is a
+single-master system from the <a href="http://blog.mongodb.org/post/475279604/on-distributed-consistency-part-1">C
+corner</a></p>
+
+<p>AP techniques let CT handle cases of high
+<a href="http://en.wikipedia.org/wiki/Round-trip_delay_time">RTT</a>
+nicely
+including of course the extreme case of offline work (which means RTT
+of several hours or days essentially). There are several points in a
+CT system where operations from different sources are simply mixed
+together effortlessly and the result is correct.</p>
+
+<p>So, let me do some speculation on the future of
+so-called Web 3.0 technologies. WebSocket allows for real-time message
+exchange between a browser and a server; WebStorage and IndexedDB
+allow to keep data at the client and WebRTC let browsers talk to each
+other. These new technologies definitely support the trend of more
+data and more code being pushed closer to the end user and farther
+from the server. But the latter aspect is a great inconvenience.</p>
+
+<p>The first reaction of developers was to
+proxy a database to the client to have a familiar LAMP-like
+architecture inside the browser instead of the server. Well, there are
+two shortcomings here. First, proxying a single-master system to
+zillions of real-world clients actually puts it into the native land
+of AP systems. Which is a round peg, square hole situation. And even
+if we use an AP database, such level of fontend-backend tight coupling
+is not necessarily good. So, I see those as the ugly first
+generation of “Web 3.0” systems.</p>
+
+<p>My bet stays with some sort of AP middleware using
+all the serious tricks inside the browser. As we see from the
+aforementioned <em>letters</em> system, that is perfectly
+feasible. Even in a situation when every keystroke is an event in
+a partially ordered log.</p>
+
+<p>Interesting times are
+coming.</p>
+
+        
+      </div><!-- /.entry-content -->
+    </div><!-- /.entry-wrapper -->
+    <nav class="pagination" role="navigation">
+      
+        <a href="http://localhost:4000/articles/code-highlighting-post/" class="btn" title="Syntax Highlighting Post">Previous article</a>
+      
+      
+    </nav><!-- /.pagination -->
+  </article>
+</div><!-- /#main -->
+
+<div class="footer-wrapper">
+  <footer role="contentinfo">
+    <span>&copy; 2014 Victor Grishchenko. Powered by <a href="http://jekyllrb.com">Jekyll</a> using the <a href="http://mademistakes.com/so-simple/">So Simple Theme</a>.</span>
+<div class="social-icons">
+	<a href="http://twitter.com/gritzko" title="Victor Grishchenko on Twitter" target="_blank"><i class="icon-twitter icon-2x"></i></a>
+	
+	
+	
+	
+	
+	
+	<a href="http://github.com/gritzko" title="Victor Grishchenko on Github" target="_blank"><i class="icon-github icon-2x"></i></a>
+	
+</div><!-- /.social-icons -->
+  </footer>
+</div><!-- /.footer-wrapper -->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="http://localhost:4000/assets/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="http://localhost:4000/assets/js/scripts.min.js"></script>
+
+<!-- Jekyll Simple Search option -->
+<script>
+  $(document).ready(function() {
+      $('.search-field').simpleJekyllSearch({
+          jsonFile : 'http://localhost:4000/search.json',
+          searchResults : '.search-results',
+          template : '<li><article><a href="{url}">{title} <span class="entry-date"><time datetime="{date}">{shortdate}</time></span></a></article></li>',
+          noResults: '<p>Nothing found.</p>'
+        });
+  });
+
+  (function( $, window, undefined ) {
+    
+     var bs = {
+          close: $(".icon-remove-sign"),
+          searchform: $(".search-form"),
+          canvas: $("body"),
+          dothis: $('.dosearch')
+      };
+    
+    bs.dothis.on('click', function() {
+      $('.search-wrapper').css({ display: "block" });
+      bs.searchform.toggleClass('active');
+      bs.searchform.find('input').focus();
+      bs.canvas.toggleClass('search-overlay');
+    });
+    
+      bs.close.on('click', function() {
+        $('.search-wrapper').removeAttr( 'style' );
+        bs.searchform.toggleClass('active');
+        bs.canvas.removeClass('search-overlay');
+    });
+  })( jQuery, window );
+</script>
+
+
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = ''; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>	        
+
+</body>
+</html>
