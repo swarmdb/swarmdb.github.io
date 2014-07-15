@@ -13,7 +13,7 @@ owner:
   avatar:         selfie.jpg
   email:          victor.grishchenko@gmail.com
   # Social networking links used in footer. Update and remove as you like.
-  twitter:        gritzko
+  twitter:        swarm_js
   facebook:
   github:         gritzko
   stackexchange:
@@ -37,8 +37,9 @@ links:
     url: /about/
   - title: Articles
     url: /articles/
-  - title: Theme Setup
-    url: /theme-setup/
+  - title: Demo
+    url: http://ppyr.us:8000/example/demo3/index.html
+    external: true
   - title: GitHub
     url: http://github.com/gritzko/swarm
     external: true
