@@ -31,3 +31,11 @@ article,aside,details,figcaption,figure,footer,header,hgroup,nav,section{display
     margin-top: 40px;
     margin-bottom: 40px;
 }
+
+footer.entry-meta {
+    opacity: 0.5;
+}
+
+footer.entry-meta:hover {
+    opacity: 1;
+}
