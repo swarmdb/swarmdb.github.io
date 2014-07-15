@@ -37,8 +37,8 @@ links:
     url: /about/
   - title: Articles
     url: /articles/
-  - title: Theme Setup
-    url: /theme-setup/
+  - title: Demo
+    url: http://ppyr.us:8000/example/demo3/index.html
   - title: GitHub
     url: http://github.com/gritzko/swarm
     external: true
