@@ -31,11 +31,11 @@ case of the "asynchronous". When we enter an elevator, our app will receive
 its API response one minute late. When a connection is "bad", the app may receive its response
 ten seconds late. Is it that much different?
 Whether we are formally "online" or "offline" does not
-really matter. If the app's state changes before we get a response to our request,
-then we are asynchronous. The RPC/HTTP world tries hard to conceal that fact, but
+really matter. If the state changes before we get a response to our request,
+then we *are* asynchronous. The RPC/HTTP world tries hard to conceal that fact, but
 concealing only works that far.
 
-Asynchrony is pretty much everywhere in this worlds and it affects everything.
+Asynchrony is pretty much everywhere in this world and it affects everything.
 In that regard, I recall a nice chat with a customer:
 
 > C: You did a really good job optimizing the app last week! <br/>
@@ -45,7 +45,7 @@ In that regard, I recall a nice chat with a customer:
 
 Mixing synchronous and asynchronous is like mixing beer and vodka: results are
 painful. Whether we speak of "callback hell", "promises", or "operational
-transformation", the underlying tensions are rooted in the fact we chase
+transformation", the underlying tensions are rooted in the fact that we chase
 those two rabbits: synchronous logic and asynchronous communication.
 
 Our current reality is massive amounts of users interacting in real time using
@@ -53,7 +53,7 @@ mobile devices. The process is served by massive amounts of servers also
 interacting in real time. Everything is faulty, everything is distributed.
 Hence, everything is asynchronous.
 Reactive architectures, event buses, eventual consistency and all that new stuff
-reflect one important fact.
+reflects one important fact.
 We are on the road out of the Don Knuth's world of perfect cause-and-reason
 chain-of-thought logic towards a new world that is more alike to biological
 signaling pathways: efficient, massive, fault-tolerant and apparently chaotic
