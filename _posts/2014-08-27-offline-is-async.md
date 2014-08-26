@@ -54,7 +54,7 @@ interacting in real time. Everything is faulty, everything is distributed.
 Hence, everything is asynchronous.
 Reactive architectures, event buses, eventual consistency and all that new stuff
 reflects one important fact.
-We are on the road out of the Don Knuth's world of perfect cause-and-reason
+We are on the road out of the Don Knuth's world of perfect cause-and-effect
 chain-of-thought logic towards a new world that is more alike to biological
 signaling pathways: efficient, massive, fault-tolerant and apparently chaotic
 to an untrained eye.
