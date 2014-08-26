@@ -5,10 +5,6 @@ description:
 modified: 2014-08-26
 category: articles
 tags:
-image:
-  feature: metabolic.png
-  credit: Wikipedia
-  creditlink: http://en.wikipedia.org/wiki/Metabolic_pathway#mediaviewer/File:Metabolism_790px.png
 comments: true
 share: true
 ---
