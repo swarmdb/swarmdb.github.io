@@ -1,7 +1,7 @@
 ---
 layout: page
 permalink: /about/
-title: Swarm: reactive data sync lib
+title: Swarm -- reactive data sync lib
 tags: [Jekyll, theme, simple, minimal, minimalism, responsive]
 modified: 2013-09-13
 ---
