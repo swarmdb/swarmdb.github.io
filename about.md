@@ -1,14 +1,14 @@
 ---
 layout: page
 permalink: /about/
-title: Swarm -- reactive data sync lib
+title: Swarm — reactive data sync lib
 tags: [Jekyll, theme, simple, minimal, minimalism, responsive]
 modified: 2013-09-13
 ---
 
 
 Swarm is a reactive data sync library and middleware. Swarm synchronizes your
-app`s model automatically, in real time.
+app\'s model automatically, in real time.
 
 Why do we make Swarm?  Because new opportunities bring new challenges. Now,
 having all that laptops, smartphones and tablets on WiFi/3G, we need handover
