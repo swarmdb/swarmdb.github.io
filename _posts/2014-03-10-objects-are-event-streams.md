@@ -2,7 +2,7 @@
 layout: post
 title: An object as an event stream
 description:
-modified: 2015-03-10
+modified: 2015-10-03
 category: articles
 tags:
 comments: true
@@ -17,8 +17,8 @@ Swarm replicates data with the granularity of a single object. That is different
 
 By an *event* we mean a state change event, such that:
 
-# if it changes no state, it is no "event" and
-# every state change is an event (or multiple events).
+* if it changes no state, it is no "event" and
+* every state change is an event (or multiple events).
 
 In fact, we use *event* almost synonymously with *operation* and, to a large degree, *method*. Event is an "arrow" on the object's state diagram. We are not discussing UI or IO events here, although in most cases those can be roughly mapped to state change events, or even mapped 1:1 in some simpler cases.
 
