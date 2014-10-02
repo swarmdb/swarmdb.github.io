@@ -1,33 +1,28 @@
 ---
 layout: page
 permalink: /about/
-title: About the Jekyll Theme
+title: Swarm — reactive data sync lib
 tags: [Jekyll, theme, simple, minimal, minimalism, responsive]
 modified: 2013-09-13
-image:
-  feature: so-simple-sample-image-4.jpg
-  credit: Michael Rose
-  creditlink: http://mademistakes.com
 ---
 
-Looking for a simple, responsive, theme for your Jekyll powered blog? Well look no further. Here be **So Simple Theme**, the followup to [**Minimal Mistakes**](http://mmistakes.github.io/minimal-mistakes) --- by designer slash illustrator [Michael Rose](http://mademistakes).
 
-## So Simple Theme is all about:
+Swarm is a reactive data sync library and middleware. Swarm synchronizes your
+app\'s model automatically, in real time.
 
-* Responsive templates. Looking good on mobile, tablet, and desktop.
-* Gracefully degrading in older browsers. Compatible with Internet Explorer 9+ and all modern browsers.
-* Minimal embellishments and subtle animations. 
-* Readable typography to make your words shine.
-* Support for large images to call out your favorite posts.
-* Disqus comments if you choose to enable.
-* Simple and clear permalink structure[^1].
-* Tags for [Open Graph](https://developers.facebook.com/docs/opengraph/) and [Twitter Cards](https://dev.twitter.com/docs/cards) for a better social sharing experience.
-* Vanilla [custom 404 page]({{ site.url }}/404.html) to get you started.
-* Stylesheets for Pygments and Coderay [syntax highlighting](http://mmistakes.github.io/articles/so-simple-theme/code-highlighting-post/) to make your code examples look snazzy.
-* Simple search that overlays results based on post title.
-* [Grunt build script]({{ site.url }}/theme-setup/index.html#theme-development) for easier theme development.
-* [Sitemap](https://github.com/mmistakes/so-simple-theme/blob/master/sitemap.xml) for search engines
+Why do we make Swarm?  Because new opportunities bring new challenges. Now,
+having all that laptops, smartphones and tablets on WiFi/3G, we need handover
+(aka continuity), real time sync and offline work. Those requirements stressed
+classic request-response HTTP architectures leading to fix-on-a-fix stacks that
+are far from perfection. We have built some apps like that.
 
-<a markdown="0" href="{{ site.url }}/theme-setup" class="btn">Install Minimal Mistakes Theme</a>
+Our dream is to develop distributed applications like good old local MVC apps,
+by fully delegating the data caching/synchronization magic to a dedicated
+layer. We want to deal with the data uniformly, no matter where it resides. We
+believe, that CRDT is the only approach that allows to fully embrace the
+reality of distributed data.
 
-[^1]: Example: *domain.com/category-name/post-title*
+Swarm is a CRDT-based replicated model library (M of MVC) that keeps your data
+correctly cached and synchronized in real time using any storage and transport
+available.
+
