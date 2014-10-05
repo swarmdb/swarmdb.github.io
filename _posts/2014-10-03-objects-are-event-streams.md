@@ -5,13 +5,16 @@ description:
 modified: 2015-10-03
 category: articles
 tags:
+image:
+    feature: teaparty.jpg
+    credit: M.C.Escher
 comments: true
 share: true
 ---
 
 Objects, events and streams are popular abstractions all around Computer Science. In Swarm, all three concepts kind of morph, so I I feel the need to explain how Swarm became event-, stream- and object- oriented at the same time.
 
-It definitely makes sense to start with definitions. By an *object* we mean a readable/writeable OOP-style object. The only addition is that it may have multiple *replicas* that need to stay in sync.
+It definitely makes sense to start with definitions. By an *object* we mean a readable/writeable OOP-style object. The only addition is that it may have multiple *replicas* that need to stay in sync.  That adds a secondary requirement: object's methods must decompose into syncable CRDT ops, more on that later.
 
 Swarm replicates data with the granularity of a single object. That is different from e.g. database replication, where the entire dataset is mirrored over. As we deal with client-side replicas, that was not an option. We see Swarm's object-centricity as an advantage over some other real-time sync technologies as the classic Entity-Relationship approach is well understood and maps nicely to SQL, noSQL, JSON, XML and, basically, everything else.
 
@@ -21,16 +24,19 @@ By an *event* we mean a state change event, such that:
 * every state change is an event (or multiple events).
 
 In fact, we use *event* almost synonymously with *operation* and, to a large degree, *method*. Event is an "arrow" on the object's state diagram. We are not discussing UI or IO events here, although in most cases those can be roughly mapped to state change events, or even mapped 1:1 in some simpler cases.
+For clarity, let's call that operation-event-method an *op*.
 
-*Stream* is a nice and ancient abstraction that allows either to write or to read data sequentially. Once we subscribe to an object, we receive a stream of state change events. That is different from the most popular pub-sub "channel" abstraction. Per-object granularity of event subscription fits reactive architectures much much better. State-change events are used locally in MVC architectures; Swarm extends that to distributed systems.
+*Stream* is a nice and ancient abstraction that allows either to write or to read data sequentially. Once we subscribe to an object, we receive a stream of state change events. That is different from the most popular pub-sub "channel" abstraction, where various events are dumped on a common *bus*, but there is no direct relation between events and state, and the bus is not a domain model object. Per-object granularity of event subscription fits reactive architectures much much better. Local state-change events are very popular in MVC architectures; Swarm extends that to distributed systems.
 
-Physicists call it "dualism" that a particle and a wave are different projections of the same entity. So, Swarm has "trialism" where the trinity of object, event and stream forms the core architecture and further on defines UI and IO behavior patterns. That is almost religious.
+Physicists call it "dualism" that a particle and a wave are different projections of the same entity. So, Swarm has dualism where an object and an event stream are projections of the core principle. That dualism defines the architecture and further on extends to UI and IO behavior patterns. That is almost religious.
 
-So, a Swarm object is a stream of state change events, like this:
+<script src="https://gist.github.com/gritzko/33d32560d97f4dd66af5.js"></script>
+
+A Swarm object is a stream of state change events, like this:
 
 ![An object is an event stream]({{ site.url }}/images/streams.svg)
 
-So, a replica of an object produces a linear stream of state change events. That stream may be delivered to another replica to synchronize their states. That is in line with the master-slave replication scheme (like MySQL or MongoDB is using).
+A replica of an object produces a linear stream of state change events. That stream is listened another replica; operations are applied, states are synchronized. That is in line with the master-slave replication scheme (like MySQL or MongoDB is using).
 
 ![Master-slave replication]({{ site.url }}/images/streams-slave.svg)
 
@@ -44,7 +50,9 @@ With CRDT, linearization is not needed, so every replica may send mutation event
 
 ![CRDT replication]({{ site.url }}/images/streams-CRDT.svg)
 
-In Lamport's terms, our object replica is actually a *process*, as it sends *messages* (operations) to other replicas asynchronously to synchronize the state. *Messages* are marked with Lamport timestamps (like `!local_time+process_id`). Thus, the state of a replica can be described by a version vector. Lamport's model is not needed much in the master-slave model as all the changes come from a single source. In the distributed model, it is critical for understanding.
+In Lamport's terms, our object replica is actually a *process*, as it sends/receives *messages* (ops) to/from other replicas asynchronously to sync the state. *Messages* are marked with Lamport timestamps (like `!local_time+process_id`, see a [post on timestamps][lamport]). Thus, the state of a replica can be described by a version vector. Lamport's model is not needed much in the master-slave model as all the changes come from a single source. In the distributed model, it is critical for understanding. Lamport's vocabulary is very popular in the CRDT literature.
+
+[lamport]: http://swarmjs.github.io/articles/lamport/
 
 So we may see an object's replica as a stream of state change events and those events may come in slightly different orders at different replicas. Eventually, all replicas get all the events, so their states converge. Still, the correct understanding of a Swarm *object* is more like "a Platonic ideal". Practically, we can read some particular replica, not an "object" itself. We may understand an object as a complete *swarm* of all its replicas, once it converges.
 
@@ -57,3 +65,5 @@ The straightforward solution of machinegunning missed events on reconnection is 
 So, any *object* is actually a *replica*. Any state change is an *event* or an *operation*, depending on whether you read or write it. All events on a replica form a *stream*. Finally, all those are different projections of the same ideal entity named "a replicated object".
 
 I hope, this post explains Swarm's core abstractions to a  sufficient degree.
+
+P.S. I'd like to acknowledge @apronchenkov for useful feedback.
