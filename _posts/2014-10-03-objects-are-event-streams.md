@@ -6,7 +6,7 @@ modified: 2015-10-03
 category: articles
 tags:
 image:
-    feature: teaparty.jpg
+    feature: day_and_night.jpg
     credit: M.C.Escher
 comments: true
 share: true
