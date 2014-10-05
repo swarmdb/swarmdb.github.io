@@ -25,11 +25,9 @@ By an *event* we mean a state change event, such that:
 
 In fact, we use *event* almost synonymously with *operation* and, to a large degree, *method*. Event is an "arrow" on the object's state diagram. We are not discussing UI or IO events here, although in most cases those can be roughly mapped to state change events, or even mapped 1:1 in some simpler cases. For clarity, let's call that operation-event-method an *op*.
 
-*Stream* is a nice and ancient abstraction that allows either to write or to read data sequentially. Once we subscribe to an object, we receive a stream of state change events. That is different from the most popular pub-sub "channel" abstraction, where various events are dumped on a common *bus*, but there is no direct relation between events and the state, and the bus is not a domain model object.
+*Stream* is a nice and ancient abstraction that allows either to write or to read data sequentially. Once we subscribe to an object, we receive a stream of state change events. That is different from the most popular pub-sub "channel" abstraction, where various events are dumped on a common *bus*, but there is no direct relation between events and the state, and the bus is not a domain model object. Per-object granularity of event subscription fits reactive architectures much much better. Local state-change events are very popular in MVC architectures; Swarm extends that to distributed systems.
 
-Often, that mutation/event stream is also named a *log* or an *oplog*. We understand streams as one-op-at-a-time event sources or sinks. Differently from streams, logs are assumed to contain all the operations in question, available at once.
-
-Per-object granularity of event subscription fits reactive architectures much much better. Local state-change events are very popular in MVC architectures; Swarm extends that to distributed systems.
+Often, that mutation/event stream is also named a *log* or an *oplog*. We understand streams as one-at-a-time event sources or sinks. Differently from streams, logs are assumed to contain all the operations in question, available at once.
 
 Physicists call it "dualism" that a particle and a wave are different projections of the same entity. So, Swarm has dualism where an object and an event stream are projections of the same core principle. That dualism defines the architecture and further on extends to UI and IO behavior patterns. That is almost religious.
 
@@ -53,7 +51,9 @@ With CRDT, linearization is not needed, so every replica may send mutation event
 
 ![CRDT replication]({{ site.url }}/images/streams-CRDT.svg)
 
-In Lamport's terms, our object replica is actually a *process*, as it sends/receives *messages* (ops) to/from other replicas asynchronously to sync the state. *Messages* are marked with Lamport timestamps (like `!local_time+process_id`, see [a detailed post][lamport]). Lamport's model is not that much needed in the master-slave model as all the changes come from a single source. In the distributed model, it is critical for understanding. Lamport's vocabulary is very popular in the CRDT literature.
+In Lamport's terms, our object replica is actually a *process*, as it sends/receives *messages* (ops) to/from other replicas asynchronously to sync the state. *Messages* are marked with Lamport timestamps. Swarm employs timestamps to identify operations, track versions, produce patches, detect replays, order operations and other purposes, see [a detailed post][lamport]. 
+
+Lamport's model was not that much needed in the master-slave model as all the changes come from a single source. In the distributed model, it is critical for understanding. Lamport's vocabulary is very popular in the CRDT literature.
 
 [lamport]: http://swarmjs.github.io/articles/lamport/
 
