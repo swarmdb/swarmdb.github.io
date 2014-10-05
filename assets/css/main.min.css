@@ -3316,7 +3316,7 @@ body {
     height: 200px;
     -webkit-border-radius: 200px;
     -moz-border-radius: 200px;
-    border-radius: 200px
+    border-radius: 200px;
     position: relative;
     top: -32px;
   }
@@ -3390,6 +3390,7 @@ body {
 .entry-feature-image {
   width: 100%;
   margin: 20px 0 0
+  transition: max-height 0.7s ease-in; 
 }
 @media only screen and (min-width: 48em) {
   .entry-feature-image {

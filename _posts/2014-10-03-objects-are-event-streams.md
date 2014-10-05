@@ -30,7 +30,7 @@ For clarity, let's call that operation-event-method an *op*.
 
 Physicists call it "dualism" that a particle and a wave are different projections of the same entity. So, Swarm has dualism where an object and an event stream are projections of the core principle. That dualism defines the architecture and further on extends to UI and IO behavior patterns. That is almost religious.
 
-<script src="https://gist.github.com/gritzko/33d32560d97f4dd66af5.js"></script>
+![What Mickey means]({{ site.url }}/images/mickey3nity.png)
 
 A Swarm object is a stream of state change events, like this:
 
