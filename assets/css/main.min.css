@@ -3390,7 +3390,7 @@ body {
 .entry-feature-image {
   width: 100%;
   margin: 20px 0 0
-  transition: max-height 0.7s ease-in; 
+  transition: max-height 0.7s ease-in;
 }
 @media only screen and (min-width: 48em) {
   .entry-feature-image {
@@ -3399,7 +3399,7 @@ body {
 }
 @media only screen and (min-width: 62.5em) {
   .entry-feature-image {
-    margin-top: -205px
+    margin-top: -225px
   }
 }
 .entry-header {

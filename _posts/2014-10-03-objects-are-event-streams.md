@@ -62,7 +62,7 @@ The straightforward solution of machinegunning missed events on reconnection is 
 
 ![Handshakes and replication]({{site.url}}/images/streams-gaps.svg)
 
-So, any *object* is actually a *replica*. Any state change is an *event* or an *operation*, depending on whether you read or write it. All events on a replica form a *stream*. Finally, all of those are just projections of the same ideal entity named "a replicated object".
+So, any *object* is actually a *replica*. Any state change is an *event* or an *operation*, depending on whether you read or write it. All events on a replica form a *stream*. Finally, all those entities are just projections of the same ideal entity named "a replicated object".
 
 I hope, this post explains Swarm's core abstractions to a sufficient degree.
 
