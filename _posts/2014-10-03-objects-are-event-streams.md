@@ -37,7 +37,7 @@ A Swarm object is a stream of state change events, like this:
 
 ![An object is an event stream]({{ site.url }}/images/streams.svg)
 
-A replica of an object produces a linear stream of state change events. That stream is listened by other replicas; operations are applied, states are synchronized. That is in line with the master-slave replication scheme (like MySQL or MongoDB is using).
+A replica of an object produces a linear stream of state change events. That stream is read by other replicas; operations are applied, states are synchronized. That is in line with the master-slave replication scheme (like MySQL or MongoDB is using).
 
 ![Master-slave replication]({{ site.url }}/images/streams-slave.svg)
 
@@ -51,7 +51,7 @@ With CRDT, linearization is not needed, so every replica may send mutation event
 
 ![CRDT replication]({{ site.url }}/images/streams-CRDT.svg)
 
-In Lamport's terms, our object replica is actually a *process*, as it sends/receives *messages* (ops) to/from other replicas asynchronously to sync the state. *Messages* are marked with Lamport timestamps. Swarm employs timestamps to identify operations, track versions, produce patches, detect replays, order operations and other purposes, see [a detailed post][lamport]. 
+In Lamport's terms, our object replica is actually a *process*, as it sends/receives *messages* (ops) to/from other replicas asynchronously to sync the state. *Messages* are marked with Lamport timestamps. Swarm employs timestamps to identify operations, track versions, produce patches, detect replays, order operations and for other purposes, see [a detailed post][lamport]. 
 
 Lamport's model was not that much needed in the master-slave model as all the changes come from a single source. In the distributed model, it is critical for understanding. Lamport's vocabulary is very popular in the CRDT literature.
 
