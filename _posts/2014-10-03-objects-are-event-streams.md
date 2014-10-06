@@ -73,4 +73,4 @@ I hope, this post explains Swarm's core abstractions to a sufficient degree.
 [oop]: http://en.wikipedia.org/wiki/Object-oriented_programming
 [async]: http://swarmjs.github.io/articles/offline-is-async/
 
-P.S. I'd like to acknowledge @apronchenkov for useful feedback.
+P.S. My thanks to @apronchenkov for sharing useful feedback.
