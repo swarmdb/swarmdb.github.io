@@ -38,7 +38,7 @@ links:
   - title: Articles
     url: /articles/
   - title: Demo
-    url: http://ppyr.us:8000/example/demo3/index.html
+    url: http://ppyr.us:8001/demo3/index.html
     external: true
   - title: GitHub
     url: http://github.com/gritzko/swarm
