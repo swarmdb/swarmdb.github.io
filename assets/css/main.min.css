@@ -3158,7 +3158,7 @@ body {
 .navigation-wrapper ul {
   display: inline-block;
   padding: 4px 20px;
-  margin: 0 0 5px;
+  margin: 0 0 50px;
   vertical-align: top;
   background-color: #000;
   -webkit-border-radius: 0 0 10px 10px;
