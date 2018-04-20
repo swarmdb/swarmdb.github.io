@@ -1,11 +1,11 @@
-title:            Swarm.js
+title:            Swarm
 description:      reactive data sync middleware
 logo:             site-logo.png
 disqus_shortname: swarmjs
 search:           true
 # Change url to your domain. Leave localhost server or blank when working locally.
 # You don't need to specify the protocol if you want it available on http and https. Example: //localhost:4000
-url:              http://swarmjs.github.io
+url:              //swarmdb.net
 
 # Owner/author information
 owner:
@@ -13,9 +13,9 @@ owner:
   avatar:         selfie.jpg
   email:          victor.grishchenko@gmail.com
   # Social networking links used in footer. Update and remove as you like.
-  twitter:        swarm_js
+  twitter:        swarmsync
   facebook:
-  github:         gritzko/swarm
+  github:         swarmdb
   stackexchange:
   linkedin:
   instagram:
@@ -38,7 +38,7 @@ links:
   - title: Articles
     url: /articles/
   - title: Demo
-    url: http://ppyr.us:8001/demo3/index.html
+    url: https://olebedev.github.io/mice
     external: true
   - title: GitHub
     url: http://github.com/gritzko/swarm

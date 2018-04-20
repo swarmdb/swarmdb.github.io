@@ -1,0 +1,398 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Swarm v 0.4 intro. Technology (2/5) &#8211; Swarm</title>
+<meta name="description" content="reactive data sync middleware">
+<meta name="keywords" content="">
+
+<!-- Twitter Cards -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="//swarmdb.net/images/shashlyk.jpg">
+
+<meta name="twitter:title" content="Swarm v 0.4 intro. Technology (2/5)">
+<meta name="twitter:description" content="reactive data sync middleware">
+<meta name="twitter:creator" content="@swarmsync">
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swarm v 0.4 intro. Technology (2/5)">
+<meta property="og:description" content="reactive data sync middleware">
+<meta property="og:url" content="//swarmdb.net/articles/2of5/">
+<meta property="og:site_name" content="Swarm">
+
+
+
+
+
+<link rel="canonical" href="//swarmdb.net/articles/2of5/">
+<link href="//swarmdb.net/feed.xml" type="application/atom+xml" rel="alternate" title="Swarm Feed">
+
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="//swarmdb.net/assets/css/main.min.css">
+<!-- Webfonts -->
+<script src="//use.edgefonts.net/source-sans-pro:n2,i2,n3,i3,n4,i4,n6,i6,n7,i7,n9,i9;source-code-pro:n4,n7;volkhov.js"></script>
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- Load Modernizr -->
+<script src="//swarmdb.net/assets/js/vendor/modernizr-2.6.2.custom.min.js"></script>
+
+<!-- Icons -->
+<!-- 16x16 -->
+<link rel="shortcut icon" href="//swarmdb.net/favicon.ico">
+<!-- 32x32 -->
+<link rel="shortcut icon" href="//swarmdb.net/favicon.png">
+<!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+<link rel="apple-touch-icon-precomposed" href="//swarmdb.net/images/apple-touch-icon-precomposed.png">
+<!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="//swarmdb.net/images/apple-touch-icon-72x72-precomposed.png">
+<!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="//swarmdb.net/images/apple-touch-icon-114x114-precomposed.png">
+<!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="//swarmdb.net/images/apple-touch-icon-144x144-precomposed.png">
+
+</head>
+
+<body id="post">
+
+<div class="navigation-wrapper">
+	<nav role="navigation" id="site-nav" class="animated drop">
+	    <ul>
+	        
+			<li>
+				
+					<a href="//swarmdb.net/about/">About</a>
+				 
+			</li>
+	        
+			<li>
+				
+					<a href="//swarmdb.net/articles/">Articles</a>
+				 
+			</li>
+	        
+			<li>
+				
+					<a href="https://olebedev.github.io/mice">Demo</a>
+				 
+			</li>
+	        
+			<li>
+				
+					<a href="http://github.com/gritzko/swarm">GitHub</a>
+				 
+			</li>
+	        
+	        <li><a href="//swarmdb.net/feed.xml" title="Atom/RSS feed"><i class="icon-rss"></i> Feed</a></li>
+	        <li class="dosearch"><i class="icon-search"></i> Search</li>
+	    </ul>
+	</nav>
+</div><!-- /.navigation-wrapper -->
+
+<!--[if lt IE 9]><div class="upgrade"><strong><a href="http://whatbrowser.org/">Your browser is quite old!</strong> Why not upgrade to a different browser to better enjoy this site?</a></div><![endif]-->
+
+<div class="search-wrapper">
+	<div class="search-form">
+		<input type="text" class="search-field" placeholder="Search...">
+		<i class="icon-remove-sign icon-2x"></i>
+		<ul class="search-results post-list"></ul><!-- /.search-results -->
+	</div><!-- /.search-form -->
+</div><!-- ./search-wrapper -->
+
+<header class="masthead">
+	
+		<div class="wrap">
+			<a href="//swarmdb.net/" class="site-logo" rel="home" title="Swarm"><img src="//swarmdb.net/images/site-logo.png" width="200" height="200" alt="Swarm logo" class="animated bounceInDown"></a>
+		</div>
+	
+</header><!-- /.masthead -->
+
+
+
+<div id="main" role="main">
+  <article class="hentry">
+    <img src="//swarmdb.net/images/shashlyk.jpg" class="entry-feature-image" alt="Swarm v 0.4 intro. Technology (2/5)" >
+    <div class="entry-wrapper">
+      <header class="entry-header">
+        <span class="entry-tags"></span>
+        
+          <h1 class="entry-title">Swarm v 0.4 intro. Technology (2/5)</h1>
+        
+      </header>
+      <footer class="entry-meta">
+        <img src="//swarmdb.net/images/selfie.jpg" alt="Victor Grishchenko photo" class="author-photo">
+        <span class="author vcard">By <span class="fn"><a href="//swarmdb.net/about/" title="About Victor Grishchenko">Victor Grishchenko</a></span></span>
+        <span class="entry-date date published"><time datetime="2015-07-16T00:00:00-04:00"><i class="icon-calendar-empty"></i> July 16, 2015</time></span>
+        <span class="entry-date date modified"><time datetime="2015-07-16"><i class="icon-pencil"></i> July 16, 2015</time></span>
+        <span class="entry-comments"><i class="icon-comment-alt"></i> <a href="#disqus_thread">Comment</a></span>
+        <span><a href="//swarmdb.net/articles/2of5/" rel="bookmark" title="Swarm v 0.4 intro. Technology (2/5)"><i class="icon-link"></i> Permalink</a></span>
+        
+        <span class="social-share-facebook">
+            <a href="https://www.facebook.com/sharer/sharer.php?u=//swarmdb.net/articles/2of5/" title="Share on Facebook" itemprop="Facebook"><i class="icon-facebook-sign"></i> Like</a></span>
+        <span class="social-share-twitter">
+            <a href="https://twitter.com/intent/tweet?hashtags=articles&text=Swarm v 0.4 intro. Technology (2/5)&url=//swarmdb.net/articles/2of5/&via=swarmsync" title="Share on Twitter" itemprop="Twitter"><i class="icon-twitter-sign"></i> Tweet</a></span>
+        <span class="social-share-googleplus">
+            <a href="https://plus.google.com/share?url=//swarmdb.net/articles/2of5/" title="Share on Google Plus" itemprop="GooglePlus"><i class="icon-google-plus-sign"></i> +1</a></span>
+            <!-- /.social-share -->
+      </footer>
+      <div class="entry-content">
+        <p>This post continues the 0.4 intro series discussing the basics of the Swarm technology.</p>
+
+<h2 id="auto-merged-crdts">Auto-merged CRDTs</h2>
+
+<p>The choice to support both real-time and offline modes was mostly driven by the use case of collaborative apps running on mobile devices. 
+That was an unusual ice-and-fire tradeoff as those conditions are perceived as opposites.
+Still, their respective complexities are caused by exactly the same root cause: asynchrony of the environment.
+If new events happen faster than other parts of the system become aware of them, things soon become difficult.</p>
+
+<p>Swarm deals with asynchrony in the most fundamental way.
+Namely, by exclusively using <a href="https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type">Commutative Replicated Data Types</a>.
+Those enable both real-time sync (like in Google Docs) and disconnected operation (offline replicas are fully functional). 
+CRDT guarantees automatic merge of concurrent changes in an asynchronous environment.
+Obviously, that comes at a cost.
+With CRDTs, the most basic <em>integer</em> data type diverges into a variety of integer types having different behaviors: <em>counter</em>, <em>register</em>, and so on.
+But at least, these types <em>have</em> a specified behavior.
+An average impromptu ad-hoc implementation is guaranteed to be full of surprises once exposed to asynchronous conditions.
+Even very professional implementations tend to reveal some <a href="http://www.datastax.com/dev/blog/whats-new-in-cassandra-2-1-a-better-implementation-of-counters">surprises</a> repeatedly.</p>
+
+<p>Hence, Swarm sticks to CRDT.
+No manual merge of changes allowed.</p>
+
+<p>On the other hand, if developers wants to, they are free to create their own CRDT data types on top of Swarm POLO layer (partially ordered op log).</p>
+
+<p>Still, CRDT is quite a broad definition.
+Those are any types that converge or commute.
+So, which ones?</p>
+
+<h2 id="op-based-cmrdt">Op-based CmRDT</h2>
+
+<p>Swarm chose op-based Commutative RDTs over state-based Convergent RDTs that <a href="http://docs.basho.com/riak/latest/dev/using/data-types/">server-side implementations</a> prefer.
+Indeed, op-based types are much better for bandwith-restricted environments (client, mobile). 
+Op-based CRDTs are somewhat reminiscent of <a href="http://googledrive.blogspot.com/2010/09/whats-different-about-new-google-docs.html">Operational Transformation</a>: every change to a data structure is represented as an <em>operation</em> (op), which is sent around, applied, stored.
+Indeed, imagine if Google Docs would use some state-based approach instead of OT.
+Sending a full document state on every key press would be a nightmare.</p>
+
+<p>What is our difference from OT then?
+OT operations are repeatedly transformed (by definition) to match the asynchronous environment and its <a href="https://en.wikipedia.org/wiki/Lamport_timestamps">partial event orders</a>.
+Contrary to that, Swarm CRDT ops are immutable.
+Data structures are defined in a way that slight changes in op order do not affect the outcome, as long as cause-effect ordering is obeyed.</p>
+
+<p>So, every object has multiple replicas, replica states are changed by ops, ops propagate to all the replicas, eventually, to make their states converge.
+In the first approach, Swarm is a regular <a href="https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type#Operation-based_CRDTs">CmRDT</a>.</p>
+
+<p>Practical question #1.
+Suppose, we download a CRDT object.
+Should we download its entire op history?
+Answer: not in Swarm.
+More or less in line with the classic <a href="https://en.wikipedia.org/wiki/State_machine_replication">state machine replication model</a>, new replicas are initialized by a state snapshot and then continuosly updated by a stream of ops.
+The key difference from the classic SMR is subtle, but important nevertheless.
+SMR assumes a single linear order of all the ops.
+We use a partially ordered operation log (POLO); our ops can arrive in different orders to different replicas.</p>
+
+<p>Practical question #2.
+In theory, most papers tend to consider “steady state” synchronization.
+In practice, steady state sync is a temporary condition, and synchronization can be interrupted halfway.
+Especially so in mobile networks.</p>
+
+<p>Hence, Swarm employs sort of a reconciliation handshake protocol.
+First, replicas exchange batches of ops to equalize their states.
+Then, they proceed with steady-state synchronization.
+As we deal with partial orders, a handshake is based either on version vectors OR linear positions in the respective op logs.
+The latter option is cheaper bandwidth-wise, but slightly expensive in terms of state to maintain.</p>
+
+<p>The resulting scheme is nicknamed “a shashlyk”:</p>
+
+<pre><code>0╌╌╌╌┴╌╌┴╌╌╌╌┴╌╌╌╌&gt;
+
+0  "zero" (default) state
+╌  ops
+┴  intermediary states
+&gt;  "head" (recentmost) state
+</code></pre>
+
+<!-- Fans of streams. Stream of operations (ops)
+Difference from Kafka, etc: per-object streams.
+Partial order. -->
+
+<p>Differently both from SMR and OT, the accent is on immutable ops, not states.
+States are not precisely ephemeral, but the exact state sequence may vary from replica to replica.
+Also, your replica might have a state nobody else had.
+Still, once all the ops reach all the replicas, they converge to the same state.</p>
+
+<p>Practical question #3.
+How do these ops get to those replicas?</p>
+
+<h2 id="spanning-trees">Spanning trees</h2>
+
+<p>It is easy to draw up a simple one-to-one client-server sync scenario.
+But here we approach the practical question #4.
+Is there such a thing as simple client-server sync at all?</p>
+
+<p>First, the client is often intermittently connected and needs to resync on reconnection.
+That aspect was covered earlier.
+Second, if a relatively simple single-page web app is open in two browser tabs, that creates certain complications.
+Some apps simply forbid that, so please close the other tab.
+Third, a web app is rarely served by a single server.
+Multiple servers require server-to-server sync.
+Fourth, greater autonomy requires a local cache.
+Imagine an office subnet that keeps working when “the cloud” goes down.
+Imagine two apps that need to sync on a single mobile device which is currently offline.</p>
+
+<p>Those challenges necessitate a multilevel sync structure.
+Not just one-to-one sync, not a “star” but at least a <em>tree</em>.
+A spanning tree of replicas is our single unifying abstraction for both server-side and client-side sync.
+Ops spread by the spanning tree from replica to replica, using the minimal number of transmissions.
+That differs from the “gossip” approach that sends updates either in all possible directions or randomly.</p>
+
+<p>Self-stabilizing spanning tree building <a href="http://infoscience.epfl.ch/record/52545/files/IC_TECH_REPORT_200338.pdf">algorithms</a> is a separate interesting topic, so let’s skip that for now.</p>
+
+<p>We assume that for each object, there is a “responsible” server-side storage that is the root of the respective spanning tree.
+Everything that gets into the root replica is <em>truly</em> saved.
+Still, isolated subtrees may function just fine.
+Technically, any node may be appointed a root.</p>
+
+<p>So, let’s reiterate question #2.
+Remember that the graph of replicas is far from steady state, connectivity is intermittent.
+Still, we need to propagate all the ops to all the replicas, while <em>avoiding causality violations</em>.</p>
+
+<p>The problem is resolved by the handshake algorithm which <em>merges</em> subtrees of replicas.
+It exchanges ops that are missing on each respective side, so steady-state sync may continue from that point on.
+Thus, handshakes build the spanning tree out of two-way subscriptions.
+The inner workings of a Swarm handshake will be discussed in the 4/5.</p>
+
+<p>At this point, we had a bird-eye view of the Swarm system:
+Ops prapagate by a Spanning Tree to all the Replicas to make their States converge.</p>
+
+<p>The next part 3/3 will explain what constitutes a Swarm node and how its parts work together: storage engine, op routing and API objects.</p>
+
+
+        <div id="disqus_thread"></div><!-- /#disqus_thread -->
+      </div><!-- /.entry-content -->
+    </div><!-- /.entry-wrapper -->
+    <nav class="pagination" role="navigation">
+      
+        <a href="//swarmdb.net/articles/1of5/" class="btn" title="Swarm v 0.4 intro (1/5)">Previous article</a>
+      
+      
+        <a href="//swarmdb.net/articles/papoc/" class="btn" title="Swarm, a sync-centric isomorphic database">Next article</a>
+      
+    </nav><!-- /.pagination -->
+  </article>
+</div><!-- /#main -->
+
+<div class="footer-wrapper">
+  <footer role="contentinfo">
+    <span>&copy; 2018 Victor Grishchenko. Powered by <a href="http://jekyllrb.com">Jekyll</a> using the <a href="http://mademistakes.com/so-simple/">So Simple Theme</a>.</span>
+<div class="social-icons">
+	<a href="http://twitter.com/swarmsync" title="Victor Grishchenko on Twitter" target="_blank"><i class="icon-twitter icon-2x"></i></a>
+	
+	
+	
+	
+	
+	
+	<a href="http://github.com/swarmdb" title="Victor Grishchenko on Github" target="_blank"><i class="icon-github icon-2x"></i></a>
+	
+</div><!-- /.social-icons -->
+  </footer>
+</div><!-- /.footer-wrapper -->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="//swarmdb.net/assets/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="//swarmdb.net/assets/js/scripts.min.js"></script>
+
+<!-- Jekyll Simple Search option -->
+<script>
+  $(document).ready(function() {
+      $('.search-field').simpleJekyllSearch({
+          jsonFile : '//swarmdb.net/search.json',
+          searchResults : '.search-results',
+          template : '<li><article><a href="{url}">{title} <span class="entry-date"><time datetime="{date}">{shortdate}</time></span></a></article></li>',
+          noResults: '<p>Nothing found.</p>'
+        });
+  });
+
+  (function( $, window, undefined ) {
+    
+     var bs = {
+          close: $(".icon-remove-sign"),
+          searchform: $(".search-form"),
+          canvas: $("body"),
+          dothis: $('.dosearch')
+      };
+    
+    bs.dothis.on('click', function() {
+      $('.search-wrapper').css({ display: "block" });
+      bs.searchform.toggleClass('active');
+      bs.searchform.find('input').focus();
+      bs.canvas.toggleClass('search-overlay');
+    });
+    
+      bs.close.on('click', function() {
+        $('.search-wrapper').removeAttr( 'style' );
+        bs.searchform.toggleClass('active');
+        bs.canvas.removeClass('search-overlay');
+    });
+  })( jQuery, window );
+</script>
+
+
+<!-- Asynchronous Google Analytics snippet -->
+<script>
+//   var _gaq = _gaq || [];
+//   var pluginUrl = 
+//  '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+//   _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+//   _gaq.push(['_setAccount', 'UA-46399542-5']);
+//   _gaq.push(['_trackPageview']);
+//
+//   (function() {
+//     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+//     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+//     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+//   })();
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46399542-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'swarmjs'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+	        
+
+</body>
+</html>

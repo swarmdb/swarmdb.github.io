@@ -1,50 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>http://swarmjs.github.io</loc>
+        <loc>//swarmdb.net</loc>
     </url>
     
     
     <url>
-        <loc>http://swarmjs.github.io/404.html</loc>
+        <loc>//swarmdb.net/404/</loc>
     </url>
     
     <url>
-        <loc>http://swarmjs.github.io/about/</loc>
+        <loc>//swarmdb.net/about/</loc>
     </url>
     
     <url>
-        <loc>http://swarmjs.github.io/articles/</loc>
+        <loc>//swarmdb.net/articles/</loc>
     </url>
     
     <url>
-        <loc>http://swarmjs.github.io/feed.xml</loc>
+        <loc>//swarmdb.net/feed.xml</loc>
     </url>
     
     <url>
-        <loc>http://swarmjs.github.io/index.html</loc>
+        <loc>//swarmdb.net/</loc>
     </url>
     
     <url>
-        <loc>http://swarmjs.github.io/search.json</loc>
+        <loc>//swarmdb.net/search.json</loc>
     </url>
     
     <url>
-        <loc>http://swarmjs.github.io/sitemap.xml</loc>
+        <loc>//swarmdb.net/sitemap.xml</loc>
     </url>
     
     <url>
-        <loc>http://swarmjs.github.io/tags/</loc>
-    </url>
-    
-    <url>
-        <loc>http://swarmjs.github.io/theme-setup/</loc>
+        <loc>//swarmdb.net/tags/</loc>
     </url>
     
 
     
     <url>
-        <loc>http://swarmjs.github.io/articles/on-kreps/</loc>
+        <loc>//swarmdb.net/articles/papoc/</loc>
+    </url>
+    
+    <url>
+        <loc>//swarmdb.net/articles/2of5/</loc>
+    </url>
+    
+    <url>
+        <loc>//swarmdb.net/articles/1of5/</loc>
+    </url>
+    
+    <url>
+        <loc>//swarmdb.net/articles/todomvc/</loc>
+    </url>
+    
+    <url>
+        <loc>//swarmdb.net/articles/objects-are-event-streams/</loc>
+    </url>
+    
+    <url>
+        <loc>//swarmdb.net/articles/android-is-coming/</loc>
+    </url>
+    
+    <url>
+        <loc>//swarmdb.net/articles/offline-is-async/</loc>
+    </url>
+    
+    <url>
+        <loc>//swarmdb.net/articles/moscowjs/</loc>
+    </url>
+    
+    <url>
+        <loc>//swarmdb.net/articles/lamport/</loc>
+    </url>
+    
+    <url>
+        <loc>//swarmdb.net/articles/release/</loc>
+    </url>
+    
+    <url>
+        <loc>//swarmdb.net/articles/on-kreps/</loc>
     </url>
     
 </urlset>

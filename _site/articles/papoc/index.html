@@ -1,0 +1,328 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Swarm, a sync-centric isomorphic database &#8211; Swarm</title>
+<meta name="description" content="reactive data sync middleware">
+<meta name="keywords" content="">
+
+<!-- Twitter Cards -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="//swarmdb.net/images/rabbit.jpg">
+
+<meta name="twitter:title" content="Swarm, a sync-centric isomorphic database">
+<meta name="twitter:description" content="reactive data sync middleware">
+<meta name="twitter:creator" content="@swarmsync">
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swarm, a sync-centric isomorphic database">
+<meta property="og:description" content="reactive data sync middleware">
+<meta property="og:url" content="//swarmdb.net/articles/papoc/">
+<meta property="og:site_name" content="Swarm">
+
+
+
+
+
+<link rel="canonical" href="//swarmdb.net/articles/papoc/">
+<link href="//swarmdb.net/feed.xml" type="application/atom+xml" rel="alternate" title="Swarm Feed">
+
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="//swarmdb.net/assets/css/main.min.css">
+<!-- Webfonts -->
+<script src="//use.edgefonts.net/source-sans-pro:n2,i2,n3,i3,n4,i4,n6,i6,n7,i7,n9,i9;source-code-pro:n4,n7;volkhov.js"></script>
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- Load Modernizr -->
+<script src="//swarmdb.net/assets/js/vendor/modernizr-2.6.2.custom.min.js"></script>
+
+<!-- Icons -->
+<!-- 16x16 -->
+<link rel="shortcut icon" href="//swarmdb.net/favicon.ico">
+<!-- 32x32 -->
+<link rel="shortcut icon" href="//swarmdb.net/favicon.png">
+<!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+<link rel="apple-touch-icon-precomposed" href="//swarmdb.net/images/apple-touch-icon-precomposed.png">
+<!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="//swarmdb.net/images/apple-touch-icon-72x72-precomposed.png">
+<!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="//swarmdb.net/images/apple-touch-icon-114x114-precomposed.png">
+<!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="//swarmdb.net/images/apple-touch-icon-144x144-precomposed.png">
+
+</head>
+
+<body id="post">
+
+<div class="navigation-wrapper">
+	<nav role="navigation" id="site-nav" class="animated drop">
+	    <ul>
+	        
+			<li>
+				
+					<a href="//swarmdb.net/about/">About</a>
+				 
+			</li>
+	        
+			<li>
+				
+					<a href="//swarmdb.net/articles/">Articles</a>
+				 
+			</li>
+	        
+			<li>
+				
+					<a href="https://olebedev.github.io/mice">Demo</a>
+				 
+			</li>
+	        
+			<li>
+				
+					<a href="http://github.com/gritzko/swarm">GitHub</a>
+				 
+			</li>
+	        
+	        <li><a href="//swarmdb.net/feed.xml" title="Atom/RSS feed"><i class="icon-rss"></i> Feed</a></li>
+	        <li class="dosearch"><i class="icon-search"></i> Search</li>
+	    </ul>
+	</nav>
+</div><!-- /.navigation-wrapper -->
+
+<!--[if lt IE 9]><div class="upgrade"><strong><a href="http://whatbrowser.org/">Your browser is quite old!</strong> Why not upgrade to a different browser to better enjoy this site?</a></div><![endif]-->
+
+<div class="search-wrapper">
+	<div class="search-form">
+		<input type="text" class="search-field" placeholder="Search...">
+		<i class="icon-remove-sign icon-2x"></i>
+		<ul class="search-results post-list"></ul><!-- /.search-results -->
+	</div><!-- /.search-form -->
+</div><!-- ./search-wrapper -->
+
+<header class="masthead">
+	
+		<div class="wrap">
+			<a href="//swarmdb.net/" class="site-logo" rel="home" title="Swarm"><img src="//swarmdb.net/images/site-logo.png" width="200" height="200" alt="Swarm logo" class="animated bounceInDown"></a>
+		</div>
+	
+</header><!-- /.masthead -->
+
+
+
+<div id="main" role="main">
+  <article class="hentry">
+    <img src="//swarmdb.net/images/rabbit.jpg" class="entry-feature-image" alt="Swarm, a sync-centric isomorphic database" >
+    <div class="entry-wrapper">
+      <header class="entry-header">
+        <span class="entry-tags"></span>
+        
+          <h1 class="entry-title">Swarm, a sync-centric isomorphic database</h1>
+        
+      </header>
+      <footer class="entry-meta">
+        <img src="//swarmdb.net/images/selfie.jpg" alt="Victor Grishchenko photo" class="author-photo">
+        <span class="author vcard">By <span class="fn"><a href="//swarmdb.net/about/" title="About Victor Grishchenko">Victor Grishchenko</a></span></span>
+        <span class="entry-date date published"><time datetime="2016-02-28T00:00:00-05:00"><i class="icon-calendar-empty"></i> February 28, 2016</time></span>
+        <span class="entry-date date modified"><time datetime="2016-02-28"><i class="icon-pencil"></i> February 28, 2016</time></span>
+        <span class="entry-comments"><i class="icon-comment-alt"></i> <a href="#disqus_thread">Comment</a></span>
+        <span><a href="//swarmdb.net/articles/papoc/" rel="bookmark" title="Swarm, a sync-centric isomorphic database"><i class="icon-link"></i> Permalink</a></span>
+        
+        <span class="social-share-facebook">
+            <a href="https://www.facebook.com/sharer/sharer.php?u=//swarmdb.net/articles/papoc/" title="Share on Facebook" itemprop="Facebook"><i class="icon-facebook-sign"></i> Like</a></span>
+        <span class="social-share-twitter">
+            <a href="https://twitter.com/intent/tweet?hashtags=articles&text=Swarm, a sync-centric isomorphic database&url=//swarmdb.net/articles/papoc/&via=swarmsync" title="Share on Twitter" itemprop="Twitter"><i class="icon-twitter-sign"></i> Tweet</a></span>
+        <span class="social-share-googleplus">
+            <a href="https://plus.google.com/share?url=//swarmdb.net/articles/papoc/" title="Share on Google Plus" itemprop="GooglePlus"><i class="icon-google-plus-sign"></i> +1</a></span>
+            <!-- /.social-share -->
+      </footer>
+      <div class="entry-content">
+        <p>The Swarm library was originally conceived as a part of a collaborative editor project. The development of the project led to a realization that we need an universal web/mobile data sync middleware able to function both in real-time and offline modes.
+Surprisingly, those seemingly opposite modes faced exactly the same challenge: the synchronous request-response approach (HTTP/RPC/SQL) was no longer applicable in both cases. Asynchrony had to be handled explicitly.</p>
+
+<p>Later on, some trends and conversations persuaded me that a dedicated syncing middleware is badly needed by a broader group of apps. First, today’s average user has multiple devices. So, even single-user apps have to sync, preferably in real-time. Second, today’s mobile devices have seemingly endless storage capacity but their internet connection is unreliable. Thus, offline mode and greater autonomy becomes highly beneficial for web and mobile apps alike.</p>
+
+<p>That led me by the path of building a general-purpose <a href="http://isomorphic.net/" title="'isomorphic' in the sense of 'isomorphic js app'"><em>isomorphic</em></a> database, i.e. one able to run simultaneously on the server and client sides to keep them in sync. While following that path, I had to reconsider, reject or adjust many basic distributed system primitives, which is an experience worth sharing.</p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Our dissatisfaction with existing solutions was based either on poor syncing (the most common case), unsuitability for real-time scenarios (CouchDB/pouchdb) or poor offline behavior (Operational Transformation). We chose the approach based on partially ordered op logs and commutative replicated data types because it satisfied all the requirements.</p>
+
+<p>Server-side use of CRDTs naturally gravitates to state-based <a href="http://docs.basho.com/riak/latest/dev/using/data-types/">convergent replicated data types</a> because of their extreme robustness in arbitrary network topologies. The downside of CvRDT is the cost of metadata that accumulates in every object’s state. In the case of op-based CmRDTs, the causal broadcast layer provides non-trivial guarantees that greatly reduce the need for per-object metadata and simplify data type <a href="http://hal.upmc.fr/inria-00555588/document" title="Section 3.1.1, op-based counter">implementation</a>. Finally, client-side bandwidth constraints favor the <a href="http://googledrive.blogspot.ru/2010/09/whats-different-about-new-google-docs.html">operation-based approach</a>.</p>
+
+<p>Hence, I chose CmRDTs and my N1 task was to implement a reliable and scalable oplog storage/synchronization layer. That layer, in turn, relied on a ordered key-value storage engine, which is the greatest common denominator of Web, mobile and server-side environments (IndexedDB, LevelDB, RocksDB, Redis, etc).</p>
+
+<p>A key requirement was to encapsulate all the distributed machinery in those lower layers and to limit above-the-water parts to a plain object-based API.</p>
+
+<h2 id="swarm-the-database">Swarm, the database</h2>
+
+<p>The Swarm’s offline and real-time capabilities rely on the fact its CmRDT op log is partially ordered. That significantly amends the classic <a href="http://research.microsoft.com/en-us/um/people/lamport/pubs/implementation.pdf">state machine replication model</a>. Namely, SMR relays changes one way (master to slave), while partially ordered log allows for two-way traffic. Similarly, other classic database constructs had to be adapted to the case of an isomorphic CRDT database.</p>
+
+<h3 id="timestamps">Timestamps</h3>
+
+<p>Timestamps in distributed systems is an extensive topic. Normally, every operation is timestamped to ensure proper storage and synchronization. Systems like Cassandra or Spanner rely on physical time. That imposes a requirement of synchronized local clocks at every replica. Spanner even employs <a href="http://static.googleusercontent.com/media/research.google.com/en//archive/spanner-osdi2012.pdf">custom hardware</a> to make physical clocks good enough.
+The opposite approach is to make logical clocks reflect the physical time, like in <a href="http://www.cse.buffalo.edu/tech-reports/2014-04.pdf">hybrid clock</a>. Unfortunately, the latter has the same requirement of NTP-synchronized clocks that can not be satisfied on the client side in the general case.</p>
+
+<p>That made me use <em>adaptable clock</em>, a variety of hybrid logical clock that prioritizes logical correctness over physical precision. In case the local clock is not well-synchronized, adaptable clocks may knowingly deviate from the (unknown) physical time to ensure logical correctness. The extent of this deviation is limited by the network round trip time (typically on the order of a tenth of a second). Such an approach leaves the requirement of good clocks for the top servers only. The rest of the replicas simply need clocks with a reasonable skew, which is a practical and <a href="https://en.wikipedia.org/wiki/LEDBAT">well-tested</a> requirement.</p>
+
+<p>The resulting calendar-friendly <a href="AdaptableClock.js">Swarm timestamp format</a> consumes 64 bits in binary or 11 chars in base64: <code>19Q6IU81001</code> (mmdHMSssiii, where iii is the sequence number).
+A full two-component <a href="https://en.wikipedia.org/wiki/Lamport_timestamps">logical timestamp</a> features a replica id, e.g. <code>19Q6IU81+kj23</code>. The alphanumeric order of timestamps fits causality, so the alphanumeric ordering of the log is useful and natural.</p>
+
+<h3 id="logs-and-version-vectors">Logs and version vectors</h3>
+
+<p>The fact an op is timestamped on the client side makes it immutable further on. That dramatically simplifies things, especially in comparison to <a href="http://googledrive.blogspot.ru/2010/09/whats-different-about-new-google-docs.html">OT</a>, which repeatedly rewrites operations in-flight. This immutability turns a database upside-down, in a sense. The master server is no longer the source of truth; it is merely an aggregation and relay point for the op log.</p>
+
+<p>Initial Swarm prototypes used full <a href="https://cwiki.apache.org/confluence/display/KAFKA/Log+Compaction">compacted</a> op logs at each replica and full version vectors in the synchronization protocol. That provided the same level of flexibility as state-based CRDTs, as any replica can sync to any other replica. Similarly to CvRDTs, that inflated metadata.</p>
+
+<p>The approach was not scalable, obviously, and the very first <a href="https://news.ycombinator.com/item?id=8453036">flash crowd</a> confirmed that. Later versions assumed that op logs are potentially infinite and the number of writers is potentially unbounded, so full log scans and full version vectors have been banned completely, even at the server side.</p>
+
+<p>Such requirements limited the topology to a tree, in the general case. Only idempotent types can be synced by <em>shortcut</em> links between any two replicas. Hence, Swarm’s key strategy is to build a spanning tree of <em>replicas</em> to propagate every op to every object’s copy (no <em>gossip</em> or suchlike).</p>
+
+<h3 id="spanning-trees">Spanning trees</h3>
+
+<p>A <em>spanning tree</em> is a single unifying abstraction that holds all replicas of a Swarm database together. New Swarm replicas are <em>forked</em> from existing replicas of the database. Only an empty new database can be <em>created</em> as such. The original becomes its copy’s <em>upstream</em>. All subscriptions and all new ops must be forwarded to the upstream to guarantee connectedness of the spanning tree. In general, the forking principle allows each replica to make read/write/forwarding decisions based on its local information: upstream, downstreams and its own role.</p>
+
+<p>A <em>role</em> (like <em>shard</em>, <em>ring</em>, <em>slave</em>, <em>client</em>, etc) is a way to generalize replica functions and behaviors and to define them as variations of the “vanilla” tree-keeping behavior. For example, a forked copy may inherit all, some or no data from its original, depending on its role. <em>Shards</em> take over responsibility for a part of the key space from their upstream replicas. <em>Clients</em> inherit as much data as they need, but no responsibility. <em>Slaves</em> inherit all the data and follow the master’s op log further on. Identical op orders allow a slave to take over the responsibility in case its master fails (i.e. to act as a hot spare).</p>
+
+<p>A spanning tree is more of a formal construct used to reason about the op log than an actual topology of message passing. A spanning tree produces an obviously correct and predictable outcome: all replicas get all the ops, possibly in slightly varying orders, with no violations of causality. The actual practical topology may feature rings, master-slave chains or load balancers. For every such topology, we may prove that the resulting log is equivalent to the one produced by some tree, hence the system functions correctly.</p>
+
+<h3 id="handshakes">Handshakes</h3>
+
+<p>The Swarm replica syncing protocol could not be modeled after anything synchronous like HTTP or RPC. Similarly, it could not reuse the classic asynchronous <em>pub-sub</em> approach which relies on <em>channel</em> subscriptions. Channels preclude clients from having a partial dataset of their own choosing.</p>
+
+<p>Swarm allows either to subscribe to the entire database or to make per-object subscriptions. Every object is essentially a product of its op log. A subscription starts with a handshake when replicas declare their log progress and exchange missing ops. After the handshake, all the new ops will be relayed to the new subscriber, until the subscription is closed.</p>
+
+<p>The initial version of the protocol relied on three-way handshakes employing version vectors. By limiting the topology to a tree in v1.0.0, the protocol was converted to a more practical two-way handshake based on log <em>bookmarks</em>. As a result, each client replica can maintain an arbitrary subset of data for an arbitrarily long period of time. A replica may go offline or let some parts of data become stale, then resync it later if needed.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>By re-fitting and re-inventing some classic concepts I produced a workable model for an isomorphic sync-centric database. Such a database can naturally exist in unlimited and, quite likely, unknown number of distributed partial replicas, most of them on the client side. The design is motivated by a belief that the next step in database scalability is to accommodate swarms of mobile devices with unreliable wireless connections.</p>
+
+
+        <div id="disqus_thread"></div><!-- /#disqus_thread -->
+      </div><!-- /.entry-content -->
+    </div><!-- /.entry-wrapper -->
+    <nav class="pagination" role="navigation">
+      
+        <a href="//swarmdb.net/articles/2of5/" class="btn" title="Swarm v 0.4 intro. Technology (2/5)">Previous article</a>
+      
+      
+    </nav><!-- /.pagination -->
+  </article>
+</div><!-- /#main -->
+
+<div class="footer-wrapper">
+  <footer role="contentinfo">
+    <span>&copy; 2018 Victor Grishchenko. Powered by <a href="http://jekyllrb.com">Jekyll</a> using the <a href="http://mademistakes.com/so-simple/">So Simple Theme</a>.</span>
+<div class="social-icons">
+	<a href="http://twitter.com/swarmsync" title="Victor Grishchenko on Twitter" target="_blank"><i class="icon-twitter icon-2x"></i></a>
+	
+	
+	
+	
+	
+	
+	<a href="http://github.com/swarmdb" title="Victor Grishchenko on Github" target="_blank"><i class="icon-github icon-2x"></i></a>
+	
+</div><!-- /.social-icons -->
+  </footer>
+</div><!-- /.footer-wrapper -->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="//swarmdb.net/assets/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="//swarmdb.net/assets/js/scripts.min.js"></script>
+
+<!-- Jekyll Simple Search option -->
+<script>
+  $(document).ready(function() {
+      $('.search-field').simpleJekyllSearch({
+          jsonFile : '//swarmdb.net/search.json',
+          searchResults : '.search-results',
+          template : '<li><article><a href="{url}">{title} <span class="entry-date"><time datetime="{date}">{shortdate}</time></span></a></article></li>',
+          noResults: '<p>Nothing found.</p>'
+        });
+  });
+
+  (function( $, window, undefined ) {
+    
+     var bs = {
+          close: $(".icon-remove-sign"),
+          searchform: $(".search-form"),
+          canvas: $("body"),
+          dothis: $('.dosearch')
+      };
+    
+    bs.dothis.on('click', function() {
+      $('.search-wrapper').css({ display: "block" });
+      bs.searchform.toggleClass('active');
+      bs.searchform.find('input').focus();
+      bs.canvas.toggleClass('search-overlay');
+    });
+    
+      bs.close.on('click', function() {
+        $('.search-wrapper').removeAttr( 'style' );
+        bs.searchform.toggleClass('active');
+        bs.canvas.removeClass('search-overlay');
+    });
+  })( jQuery, window );
+</script>
+
+
+<!-- Asynchronous Google Analytics snippet -->
+<script>
+//   var _gaq = _gaq || [];
+//   var pluginUrl = 
+//  '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+//   _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+//   _gaq.push(['_setAccount', 'UA-46399542-5']);
+//   _gaq.push(['_trackPageview']);
+//
+//   (function() {
+//     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+//     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+//     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+//   })();
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46399542-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'swarmjs'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+	        
+
+</body>
+</html>

@@ -3,31 +3,836 @@
 
 
 
-  
-
-<title type="text">Swarm.js</title>
+<title type="text">Swarm</title>
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
-<link rel="self" type="application/atom+xml" href="http://swarmjs.github.io/feed.xml" />
-<link rel="alternate" type="text/html" href="http://swarmjs.github.io/" />
-<updated>2014-05-26T15:26:07-04:00</updated>
-<id>http://swarmjs.github.io/</id>
+<link rel="self" type="application/atom+xml" href="http://swarmdb.net/feed.xml" />
+<link rel="alternate" type="text/html" href="http://swarmdb.net/" />
+<updated>2018-04-20T06:11:11-04:00</updated>
+<id>http://swarmdb.net/</id>
 <author>
   <name>Victor Grishchenko</name>
-  <uri>http://swarmjs.github.io/</uri>
+  <uri>http://swarmdb.net/</uri>
   <email>victor.grishchenko@gmail.com</email>
 </author>
 
 
 <entry>
+  <title type="html"><![CDATA[Swarm, a sync-centric isomorphic database]]></title>
+  <link rel="alternate" type="text/html" href="http://swarmdb.net/articles/papoc/"/>
+  <id>http://swarmdb.net/articles/papoc</id>
+  <updated>2016-02-28T00:00:00-00:00</updated>
+  <published>2016-02-28T00:00:00-05:00</published>
+  
+  <author>
+    <name>Victor Grishchenko</name>
+    <uri>http://swarmdb.net</uri>
+    <email>victor.grishchenko@gmail.com</email>
+  </author>
+  
+  <content type="html">
+  
+    &lt;p&gt;The Swarm library was originally conceived as a part of a collaborative editor project. The development of the project led to a realization that we need an universal web/mobile data sync middleware able to function both in real-time and offline modes.
+Surprisingly, those seemingly opposite modes faced exactly the same challenge: the synchronous request-response approach (HTTP/RPC/SQL) was no longer applicable in both cases. Asynchrony had to be handled explicitly.&lt;/p&gt;
+
+&lt;p&gt;Later on, some trends and conversations persuaded me that a dedicated syncing middleware is badly needed by a broader group of apps. First, today’s average user has multiple devices. So, even single-user apps have to sync, preferably in real-time. Second, today’s mobile devices have seemingly endless storage capacity but their internet connection is unreliable. Thus, offline mode and greater autonomy becomes highly beneficial for web and mobile apps alike.&lt;/p&gt;
+
+&lt;p&gt;That led me by the path of building a general-purpose &lt;a href=&quot;http://isomorphic.net/&quot; title=&quot;'isomorphic' in the sense of 'isomorphic js app'&quot;&gt;&lt;em&gt;isomorphic&lt;/em&gt;&lt;/a&gt; database, i.e. one able to run simultaneously on the server and client sides to keep them in sync. While following that path, I had to reconsider, reject or adjust many basic distributed system primitives, which is an experience worth sharing.&lt;/p&gt;
+
+&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
+
+&lt;p&gt;Our dissatisfaction with existing solutions was based either on poor syncing (the most common case), unsuitability for real-time scenarios (CouchDB/pouchdb) or poor offline behavior (Operational Transformation). We chose the approach based on partially ordered op logs and commutative replicated data types because it satisfied all the requirements.&lt;/p&gt;
+
+&lt;p&gt;Server-side use of CRDTs naturally gravitates to state-based &lt;a href=&quot;http://docs.basho.com/riak/latest/dev/using/data-types/&quot;&gt;convergent replicated data types&lt;/a&gt; because of their extreme robustness in arbitrary network topologies. The downside of CvRDT is the cost of metadata that accumulates in every object’s state. In the case of op-based CmRDTs, the causal broadcast layer provides non-trivial guarantees that greatly reduce the need for per-object metadata and simplify data type &lt;a href=&quot;http://hal.upmc.fr/inria-00555588/document&quot; title=&quot;Section 3.1.1, op-based counter&quot;&gt;implementation&lt;/a&gt;. Finally, client-side bandwidth constraints favor the &lt;a href=&quot;http://googledrive.blogspot.ru/2010/09/whats-different-about-new-google-docs.html&quot;&gt;operation-based approach&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Hence, I chose CmRDTs and my N1 task was to implement a reliable and scalable oplog storage/synchronization layer. That layer, in turn, relied on a ordered key-value storage engine, which is the greatest common denominator of Web, mobile and server-side environments (IndexedDB, LevelDB, RocksDB, Redis, etc).&lt;/p&gt;
+
+&lt;p&gt;A key requirement was to encapsulate all the distributed machinery in those lower layers and to limit above-the-water parts to a plain object-based API.&lt;/p&gt;
+
+&lt;h2 id=&quot;swarm-the-database&quot;&gt;Swarm, the database&lt;/h2&gt;
+
+&lt;p&gt;The Swarm’s offline and real-time capabilities rely on the fact its CmRDT op log is partially ordered. That significantly amends the classic &lt;a href=&quot;http://research.microsoft.com/en-us/um/people/lamport/pubs/implementation.pdf&quot;&gt;state machine replication model&lt;/a&gt;. Namely, SMR relays changes one way (master to slave), while partially ordered log allows for two-way traffic. Similarly, other classic database constructs had to be adapted to the case of an isomorphic CRDT database.&lt;/p&gt;
+
+&lt;h3 id=&quot;timestamps&quot;&gt;Timestamps&lt;/h3&gt;
+
+&lt;p&gt;Timestamps in distributed systems is an extensive topic. Normally, every operation is timestamped to ensure proper storage and synchronization. Systems like Cassandra or Spanner rely on physical time. That imposes a requirement of synchronized local clocks at every replica. Spanner even employs &lt;a href=&quot;http://static.googleusercontent.com/media/research.google.com/en//archive/spanner-osdi2012.pdf&quot;&gt;custom hardware&lt;/a&gt; to make physical clocks good enough.
+The opposite approach is to make logical clocks reflect the physical time, like in &lt;a href=&quot;http://www.cse.buffalo.edu/tech-reports/2014-04.pdf&quot;&gt;hybrid clock&lt;/a&gt;. Unfortunately, the latter has the same requirement of NTP-synchronized clocks that can not be satisfied on the client side in the general case.&lt;/p&gt;
+
+&lt;p&gt;That made me use &lt;em&gt;adaptable clock&lt;/em&gt;, a variety of hybrid logical clock that prioritizes logical correctness over physical precision. In case the local clock is not well-synchronized, adaptable clocks may knowingly deviate from the (unknown) physical time to ensure logical correctness. The extent of this deviation is limited by the network round trip time (typically on the order of a tenth of a second). Such an approach leaves the requirement of good clocks for the top servers only. The rest of the replicas simply need clocks with a reasonable skew, which is a practical and &lt;a href=&quot;https://en.wikipedia.org/wiki/LEDBAT&quot;&gt;well-tested&lt;/a&gt; requirement.&lt;/p&gt;
+
+&lt;p&gt;The resulting calendar-friendly &lt;a href=&quot;AdaptableClock.js&quot;&gt;Swarm timestamp format&lt;/a&gt; consumes 64 bits in binary or 11 chars in base64: &lt;code&gt;19Q6IU81001&lt;/code&gt; (mmdHMSssiii, where iii is the sequence number).
+A full two-component &lt;a href=&quot;https://en.wikipedia.org/wiki/Lamport_timestamps&quot;&gt;logical timestamp&lt;/a&gt; features a replica id, e.g. &lt;code&gt;19Q6IU81+kj23&lt;/code&gt;. The alphanumeric order of timestamps fits causality, so the alphanumeric ordering of the log is useful and natural.&lt;/p&gt;
+
+&lt;h3 id=&quot;logs-and-version-vectors&quot;&gt;Logs and version vectors&lt;/h3&gt;
+
+&lt;p&gt;The fact an op is timestamped on the client side makes it immutable further on. That dramatically simplifies things, especially in comparison to &lt;a href=&quot;http://googledrive.blogspot.ru/2010/09/whats-different-about-new-google-docs.html&quot;&gt;OT&lt;/a&gt;, which repeatedly rewrites operations in-flight. This immutability turns a database upside-down, in a sense. The master server is no longer the source of truth; it is merely an aggregation and relay point for the op log.&lt;/p&gt;
+
+&lt;p&gt;Initial Swarm prototypes used full &lt;a href=&quot;https://cwiki.apache.org/confluence/display/KAFKA/Log+Compaction&quot;&gt;compacted&lt;/a&gt; op logs at each replica and full version vectors in the synchronization protocol. That provided the same level of flexibility as state-based CRDTs, as any replica can sync to any other replica. Similarly to CvRDTs, that inflated metadata.&lt;/p&gt;
+
+&lt;p&gt;The approach was not scalable, obviously, and the very first &lt;a href=&quot;https://news.ycombinator.com/item?id=8453036&quot;&gt;flash crowd&lt;/a&gt; confirmed that. Later versions assumed that op logs are potentially infinite and the number of writers is potentially unbounded, so full log scans and full version vectors have been banned completely, even at the server side.&lt;/p&gt;
+
+&lt;p&gt;Such requirements limited the topology to a tree, in the general case. Only idempotent types can be synced by &lt;em&gt;shortcut&lt;/em&gt; links between any two replicas. Hence, Swarm’s key strategy is to build a spanning tree of &lt;em&gt;replicas&lt;/em&gt; to propagate every op to every object’s copy (no &lt;em&gt;gossip&lt;/em&gt; or suchlike).&lt;/p&gt;
+
+&lt;h3 id=&quot;spanning-trees&quot;&gt;Spanning trees&lt;/h3&gt;
+
+&lt;p&gt;A &lt;em&gt;spanning tree&lt;/em&gt; is a single unifying abstraction that holds all replicas of a Swarm database together. New Swarm replicas are &lt;em&gt;forked&lt;/em&gt; from existing replicas of the database. Only an empty new database can be &lt;em&gt;created&lt;/em&gt; as such. The original becomes its copy’s &lt;em&gt;upstream&lt;/em&gt;. All subscriptions and all new ops must be forwarded to the upstream to guarantee connectedness of the spanning tree. In general, the forking principle allows each replica to make read/write/forwarding decisions based on its local information: upstream, downstreams and its own role.&lt;/p&gt;
+
+&lt;p&gt;A &lt;em&gt;role&lt;/em&gt; (like &lt;em&gt;shard&lt;/em&gt;, &lt;em&gt;ring&lt;/em&gt;, &lt;em&gt;slave&lt;/em&gt;, &lt;em&gt;client&lt;/em&gt;, etc) is a way to generalize replica functions and behaviors and to define them as variations of the “vanilla” tree-keeping behavior. For example, a forked copy may inherit all, some or no data from its original, depending on its role. &lt;em&gt;Shards&lt;/em&gt; take over responsibility for a part of the key space from their upstream replicas. &lt;em&gt;Clients&lt;/em&gt; inherit as much data as they need, but no responsibility. &lt;em&gt;Slaves&lt;/em&gt; inherit all the data and follow the master’s op log further on. Identical op orders allow a slave to take over the responsibility in case its master fails (i.e. to act as a hot spare).&lt;/p&gt;
+
+&lt;p&gt;A spanning tree is more of a formal construct used to reason about the op log than an actual topology of message passing. A spanning tree produces an obviously correct and predictable outcome: all replicas get all the ops, possibly in slightly varying orders, with no violations of causality. The actual practical topology may feature rings, master-slave chains or load balancers. For every such topology, we may prove that the resulting log is equivalent to the one produced by some tree, hence the system functions correctly.&lt;/p&gt;
+
+&lt;h3 id=&quot;handshakes&quot;&gt;Handshakes&lt;/h3&gt;
+
+&lt;p&gt;The Swarm replica syncing protocol could not be modeled after anything synchronous like HTTP or RPC. Similarly, it could not reuse the classic asynchronous &lt;em&gt;pub-sub&lt;/em&gt; approach which relies on &lt;em&gt;channel&lt;/em&gt; subscriptions. Channels preclude clients from having a partial dataset of their own choosing.&lt;/p&gt;
+
+&lt;p&gt;Swarm allows either to subscribe to the entire database or to make per-object subscriptions. Every object is essentially a product of its op log. A subscription starts with a handshake when replicas declare their log progress and exchange missing ops. After the handshake, all the new ops will be relayed to the new subscriber, until the subscription is closed.&lt;/p&gt;
+
+&lt;p&gt;The initial version of the protocol relied on three-way handshakes employing version vectors. By limiting the topology to a tree in v1.0.0, the protocol was converted to a more practical two-way handshake based on log &lt;em&gt;bookmarks&lt;/em&gt;. As a result, each client replica can maintain an arbitrary subset of data for an arbitrarily long period of time. A replica may go offline or let some parts of data become stale, then resync it later if needed.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;By re-fitting and re-inventing some classic concepts I produced a workable model for an isomorphic sync-centric database. Such a database can naturally exist in unlimited and, quite likely, unknown number of distributed partial replicas, most of them on the client side. The design is motivated by a belief that the next step in database scalability is to accommodate swarms of mobile devices with unreliable wireless connections.&lt;/p&gt;
+
+
+  
+  &lt;p&gt;&lt;a href=&quot;http://swarmdb.net/articles/papoc/&quot;&gt;Swarm, a sync-centric isomorphic database&lt;/a&gt; was originally published by Victor Grishchenko at &lt;a href=&quot;http://swarmdb.net&quot;&gt;Swarm&lt;/a&gt; on February 28, 2016.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[Swarm v 0.4 intro. Technology (2/5)]]></title>
+  <link rel="alternate" type="text/html" href="http://swarmdb.net/articles/2of5/"/>
+  <id>http://swarmdb.net/articles/2of5</id>
+  <updated>2015-07-16T00:00:00-00:00</updated>
+  <published>2015-07-16T00:00:00-04:00</published>
+  
+  <author>
+    <name>Victor Grishchenko</name>
+    <uri>http://swarmdb.net</uri>
+    <email>victor.grishchenko@gmail.com</email>
+  </author>
+  
+  <content type="html">
+  
+    &lt;p&gt;This post continues the 0.4 intro series discussing the basics of the Swarm technology.&lt;/p&gt;
+
+&lt;h2 id=&quot;auto-merged-crdts&quot;&gt;Auto-merged CRDTs&lt;/h2&gt;
+
+&lt;p&gt;The choice to support both real-time and offline modes was mostly driven by the use case of collaborative apps running on mobile devices. 
+That was an unusual ice-and-fire tradeoff as those conditions are perceived as opposites.
+Still, their respective complexities are caused by exactly the same root cause: asynchrony of the environment.
+If new events happen faster than other parts of the system become aware of them, things soon become difficult.&lt;/p&gt;
+
+&lt;p&gt;Swarm deals with asynchrony in the most fundamental way.
+Namely, by exclusively using &lt;a href=&quot;https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type&quot;&gt;Commutative Replicated Data Types&lt;/a&gt;.
+Those enable both real-time sync (like in Google Docs) and disconnected operation (offline replicas are fully functional). 
+CRDT guarantees automatic merge of concurrent changes in an asynchronous environment.
+Obviously, that comes at a cost.
+With CRDTs, the most basic &lt;em&gt;integer&lt;/em&gt; data type diverges into a variety of integer types having different behaviors: &lt;em&gt;counter&lt;/em&gt;, &lt;em&gt;register&lt;/em&gt;, and so on.
+But at least, these types &lt;em&gt;have&lt;/em&gt; a specified behavior.
+An average impromptu ad-hoc implementation is guaranteed to be full of surprises once exposed to asynchronous conditions.
+Even very professional implementations tend to reveal some &lt;a href=&quot;http://www.datastax.com/dev/blog/whats-new-in-cassandra-2-1-a-better-implementation-of-counters&quot;&gt;surprises&lt;/a&gt; repeatedly.&lt;/p&gt;
+
+&lt;p&gt;Hence, Swarm sticks to CRDT.
+No manual merge of changes allowed.&lt;/p&gt;
+
+&lt;p&gt;On the other hand, if developers wants to, they are free to create their own CRDT data types on top of Swarm POLO layer (partially ordered op log).&lt;/p&gt;
+
+&lt;p&gt;Still, CRDT is quite a broad definition.
+Those are any types that converge or commute.
+So, which ones?&lt;/p&gt;
+
+&lt;h2 id=&quot;op-based-cmrdt&quot;&gt;Op-based CmRDT&lt;/h2&gt;
+
+&lt;p&gt;Swarm chose op-based Commutative RDTs over state-based Convergent RDTs that &lt;a href=&quot;http://docs.basho.com/riak/latest/dev/using/data-types/&quot;&gt;server-side implementations&lt;/a&gt; prefer.
+Indeed, op-based types are much better for bandwith-restricted environments (client, mobile). 
+Op-based CRDTs are somewhat reminiscent of &lt;a href=&quot;http://googledrive.blogspot.com/2010/09/whats-different-about-new-google-docs.html&quot;&gt;Operational Transformation&lt;/a&gt;: every change to a data structure is represented as an &lt;em&gt;operation&lt;/em&gt; (op), which is sent around, applied, stored.
+Indeed, imagine if Google Docs would use some state-based approach instead of OT.
+Sending a full document state on every key press would be a nightmare.&lt;/p&gt;
+
+&lt;p&gt;What is our difference from OT then?
+OT operations are repeatedly transformed (by definition) to match the asynchronous environment and its &lt;a href=&quot;https://en.wikipedia.org/wiki/Lamport_timestamps&quot;&gt;partial event orders&lt;/a&gt;.
+Contrary to that, Swarm CRDT ops are immutable.
+Data structures are defined in a way that slight changes in op order do not affect the outcome, as long as cause-effect ordering is obeyed.&lt;/p&gt;
+
+&lt;p&gt;So, every object has multiple replicas, replica states are changed by ops, ops propagate to all the replicas, eventually, to make their states converge.
+In the first approach, Swarm is a regular &lt;a href=&quot;https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type#Operation-based_CRDTs&quot;&gt;CmRDT&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Practical question #1.
+Suppose, we download a CRDT object.
+Should we download its entire op history?
+Answer: not in Swarm.
+More or less in line with the classic &lt;a href=&quot;https://en.wikipedia.org/wiki/State_machine_replication&quot;&gt;state machine replication model&lt;/a&gt;, new replicas are initialized by a state snapshot and then continuosly updated by a stream of ops.
+The key difference from the classic SMR is subtle, but important nevertheless.
+SMR assumes a single linear order of all the ops.
+We use a partially ordered operation log (POLO); our ops can arrive in different orders to different replicas.&lt;/p&gt;
+
+&lt;p&gt;Practical question #2.
+In theory, most papers tend to consider “steady state” synchronization.
+In practice, steady state sync is a temporary condition, and synchronization can be interrupted halfway.
+Especially so in mobile networks.&lt;/p&gt;
+
+&lt;p&gt;Hence, Swarm employs sort of a reconciliation handshake protocol.
+First, replicas exchange batches of ops to equalize their states.
+Then, they proceed with steady-state synchronization.
+As we deal with partial orders, a handshake is based either on version vectors OR linear positions in the respective op logs.
+The latter option is cheaper bandwidth-wise, but slightly expensive in terms of state to maintain.&lt;/p&gt;
+
+&lt;p&gt;The resulting scheme is nicknamed “a shashlyk”:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;0╌╌╌╌┴╌╌┴╌╌╌╌┴╌╌╌╌&amp;gt;
+
+0  &quot;zero&quot; (default) state
+╌  ops
+┴  intermediary states
+&amp;gt;  &quot;head&quot; (recentmost) state
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;!-- Fans of streams. Stream of operations (ops)
+Difference from Kafka, etc: per-object streams.
+Partial order. --&gt;
+
+&lt;p&gt;Differently both from SMR and OT, the accent is on immutable ops, not states.
+States are not precisely ephemeral, but the exact state sequence may vary from replica to replica.
+Also, your replica might have a state nobody else had.
+Still, once all the ops reach all the replicas, they converge to the same state.&lt;/p&gt;
+
+&lt;p&gt;Practical question #3.
+How do these ops get to those replicas?&lt;/p&gt;
+
+&lt;h2 id=&quot;spanning-trees&quot;&gt;Spanning trees&lt;/h2&gt;
+
+&lt;p&gt;It is easy to draw up a simple one-to-one client-server sync scenario.
+But here we approach the practical question #4.
+Is there such a thing as simple client-server sync at all?&lt;/p&gt;
+
+&lt;p&gt;First, the client is often intermittently connected and needs to resync on reconnection.
+That aspect was covered earlier.
+Second, if a relatively simple single-page web app is open in two browser tabs, that creates certain complications.
+Some apps simply forbid that, so please close the other tab.
+Third, a web app is rarely served by a single server.
+Multiple servers require server-to-server sync.
+Fourth, greater autonomy requires a local cache.
+Imagine an office subnet that keeps working when “the cloud” goes down.
+Imagine two apps that need to sync on a single mobile device which is currently offline.&lt;/p&gt;
+
+&lt;p&gt;Those challenges necessitate a multilevel sync structure.
+Not just one-to-one sync, not a “star” but at least a &lt;em&gt;tree&lt;/em&gt;.
+A spanning tree of replicas is our single unifying abstraction for both server-side and client-side sync.
+Ops spread by the spanning tree from replica to replica, using the minimal number of transmissions.
+That differs from the “gossip” approach that sends updates either in all possible directions or randomly.&lt;/p&gt;
+
+&lt;p&gt;Self-stabilizing spanning tree building &lt;a href=&quot;http://infoscience.epfl.ch/record/52545/files/IC_TECH_REPORT_200338.pdf&quot;&gt;algorithms&lt;/a&gt; is a separate interesting topic, so let’s skip that for now.&lt;/p&gt;
+
+&lt;p&gt;We assume that for each object, there is a “responsible” server-side storage that is the root of the respective spanning tree.
+Everything that gets into the root replica is &lt;em&gt;truly&lt;/em&gt; saved.
+Still, isolated subtrees may function just fine.
+Technically, any node may be appointed a root.&lt;/p&gt;
+
+&lt;p&gt;So, let’s reiterate question #2.
+Remember that the graph of replicas is far from steady state, connectivity is intermittent.
+Still, we need to propagate all the ops to all the replicas, while &lt;em&gt;avoiding causality violations&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;The problem is resolved by the handshake algorithm which &lt;em&gt;merges&lt;/em&gt; subtrees of replicas.
+It exchanges ops that are missing on each respective side, so steady-state sync may continue from that point on.
+Thus, handshakes build the spanning tree out of two-way subscriptions.
+The inner workings of a Swarm handshake will be discussed in the 4/5.&lt;/p&gt;
+
+&lt;p&gt;At this point, we had a bird-eye view of the Swarm system:
+Ops prapagate by a Spanning Tree to all the Replicas to make their States converge.&lt;/p&gt;
+
+&lt;p&gt;The next part 3/3 will explain what constitutes a Swarm node and how its parts work together: storage engine, op routing and API objects.&lt;/p&gt;
+
+
+  
+  &lt;p&gt;&lt;a href=&quot;http://swarmdb.net/articles/2of5/&quot;&gt;Swarm v 0.4 intro. Technology (2/5)&lt;/a&gt; was originally published by Victor Grishchenko at &lt;a href=&quot;http://swarmdb.net&quot;&gt;Swarm&lt;/a&gt; on July 16, 2015.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[Swarm v 0.4 intro (1/5)]]></title>
+  <link rel="alternate" type="text/html" href="http://swarmdb.net/articles/1of5/"/>
+  <id>http://swarmdb.net/articles/1of5</id>
+  <updated>2015-07-02T00:00:00-00:00</updated>
+  <published>2015-07-02T00:00:00-04:00</published>
+  
+  <author>
+    <name>Victor Grishchenko</name>
+    <uri>http://swarmdb.net</uri>
+    <email>victor.grishchenko@gmail.com</email>
+  </author>
+  
+  <content type="html">
+  
+    &lt;p&gt;On its long road from version 0.3 to version 0.4, Swarm changed a lot.
+While Swarm 0.3 was built along the lines of a M-of-MVC JavaScript framework, 0.4 is more like a cross of a NoSQL database, ORM library and a pub/sub service, although it does not fit either category.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The API is object based, much like in ORM.&lt;/li&gt;
+  &lt;li&gt;Once fetched, the data keeps being updated, like in pub/sub.&lt;/li&gt;
+  &lt;li&gt;Finally, Swarm supports no SQL :)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Hence, Swarm is safely described as “data sync middleware”.&lt;/p&gt;
+
+&lt;p&gt;I start a series of five posts discussing the project’s objective (1/5), the underlying technology (2/5), its parts and inner workings (3/5), its network protocol (4/5) and exposed APIs (5/5) as of version 0.4 (which is currently available as an &lt;a href=&quot;https://github.com/gritzko/swarm/tree/0.4&quot;&gt;unstable branch&lt;/a&gt; and will hopefully replace 0.3 once we reach post 5/5).&lt;/p&gt;
+
+&lt;h2 id=&quot;objectives&quot;&gt;Objectives&lt;/h2&gt;
+
+&lt;p&gt;Swarm’s mission is to synchronize data in collaborative apps, web and mobile alike. Swarm is the M of MVC. That shapes its very specific feature set:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;it synchronizes data in real time,&lt;/li&gt;
+  &lt;li&gt;it works fine on intermittent internet connections (mobile/wireless),&lt;/li&gt;
+  &lt;li&gt;it works with partial datasets (the client can’t have the complete DB).&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;More on that below.&lt;/p&gt;
+
+&lt;h3 id=&quot;real-time&quot;&gt;Real-time&lt;/h3&gt;
+
+&lt;p&gt;These days, collaborative software tends to sync in real-time as the default. If users share a room or a teleconference, your software has to keep up with the natural speed of events. If you are doing a mobile app, then your app can’t be worse than SMSes and SMSes are pretty much real time already.&lt;/p&gt;
+
+&lt;p&gt;Going further on the realtimeness scale, interesting things start to happen. Arguably, Google Docs was the first Web app to experience those effects. Once the timescale of changes starts being smaller than the timescale of change propagation, it gets &lt;em&gt;curiouser and curiouser&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Consider chats. Despite all the experience in building that kind of apps, their sync is imperfect, typically. For example, it is not uncommon to see messages evaporating from Facebook, GTalk or Skype message histories. And chats are just &lt;em&gt;barely&lt;/em&gt; realtime.&lt;/p&gt;
+
+&lt;p&gt;Well, data syncing is fundamentally hard. Nobody builds their in-house DB or crypto these days. Soon, nobody will risk to build their own sync.&lt;/p&gt;
+
+&lt;h3 id=&quot;intermittent-connectivity&quot;&gt;Intermittent connectivity&lt;/h3&gt;
+
+&lt;p&gt;On one hand, “there will be no offline soon”; mobile data is ubiquitous. On the other hand, mobile+wireless means &lt;em&gt;intermittent&lt;/em&gt; internet connection. Physics, contention, hardware faults, and hand-overs lead to temporary network unavailability.
+If a user is actually &lt;em&gt;mobile&lt;/em&gt; (i.e. walks, holds a device in the hand), then he/she expects that device to be responsive &lt;em&gt;now&lt;/em&gt;. That assumes some level of autonomy.&lt;/p&gt;
+
+&lt;p&gt;Swarm is able to cache everything it fetches and work off the local data set. Also, it is able to stash changes to sync them later.&lt;/p&gt;
+
+&lt;h3 id=&quot;partial-datasets&quot;&gt;Partial datasets&lt;/h3&gt;
+
+&lt;p&gt;The classic DB “dataset replication” ideology assumes the full dataset being copied over and synced. Obviously, that does not work for client-side syncing. A client needs a tiny arbitrary subset of the data.&lt;/p&gt;
+
+&lt;p&gt;One popular shortcut is to work with per-user or per-document datasets. That trick shifts the complexity somewhere else, sometimes too much of it.
+A nice example is a simple chat roster (who’s online, who’s offline).
+The overwhelming majority of typical chat app traffic is roster updates. Statuses change more often and their fanout is higher than those of regular chat messages. The problem is, every user needs to see his own subset of “friends”.&lt;/p&gt;
+
+&lt;p&gt;Swarm aims to make it &lt;em&gt;straight&lt;/em&gt;. There must be no less-synced UI parts. Swarm subscriptions work on the object-by-object basis. All the data fetched keeps being updated.&lt;/p&gt;
+
+&lt;h3 id=&quot;p2p-sync&quot;&gt;P2P sync&lt;/h3&gt;
+
+&lt;p&gt;There is a bunch of political, engineering and usability arguments in favor of P2P architectures. Unfortunately, building P2P systems is order of magnitude harder.&lt;/p&gt;
+
+&lt;p&gt;Like &lt;em&gt;git&lt;/em&gt; repos, Swarm replicas are &lt;em&gt;peers&lt;/em&gt;, so there is no master copy.
+As a byproduct, Swarm supports local data caches and P2P serverless sync.  That warrants some level of flexibility and resilience. For example, an on-premises cache can localize an organization’s traffic. Similarly, an on-device caching daemon can sync data locally between applications.&lt;/p&gt;
+
+&lt;p&gt;Consider modern smartphones. Their local data cache is virtually unlimited. Meanwhile, mobile data connections are by no means reliable. Given that trade-off, caching and prefetching come in handy. Direct device-to-device sync is also potentially useful.&lt;/p&gt;
+
+&lt;p&gt;In the next post , I’ll explain how Swarm achieves those objectives by employing CRDT data types.&lt;/p&gt;
+
+  
+  &lt;p&gt;&lt;a href=&quot;http://swarmdb.net/articles/1of5/&quot;&gt;Swarm v 0.4 intro (1/5)&lt;/a&gt; was originally published by Victor Grishchenko at &lt;a href=&quot;http://swarmdb.net&quot;&gt;Swarm&lt;/a&gt; on July 02, 2015.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[Swarm.js+React — real-time, offline-ready Holy Grail web apps]]></title>
+  <link rel="alternate" type="text/html" href="http://swarmdb.net/articles/todomvc/"/>
+  <id>http://swarmdb.net/articles/todomvc</id>
+  <updated>2014-10-14T00:00:00-00:00</updated>
+  <published>2014-10-14T00:00:00-04:00</published>
+  
+  <author>
+    <name>Victor Grishchenko</name>
+    <uri>http://swarmdb.net</uri>
+    <email>victor.grishchenko@gmail.com</email>
+  </author>
+  
+  <content type="html">
+  
+    &lt;p&gt;The state of sync in web apps is that &lt;em&gt;sync sucks&lt;/em&gt;.
+GTalk loses messages inbetween desktop and mobile.
+Apple iCloud can’t merge back document replicas if those were edited concurrently.
+Google Docs needs some ungodly chemistry to resync after working offline.
+These are SNAFUs I personally experienced and I have also heard other folks complaining about &lt;a href=&quot;https://news.ycombinator.com/item?id=7009995&quot;&gt;Evernote&lt;/a&gt;, Skype, &lt;a href=&quot;https://news.ycombinator.com/item?id=8440985&quot;&gt;Dropbox&lt;/a&gt;, you name it.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://swarmdb.net/images/syncsucks.png&quot; alt=&quot;Sync sucks&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Skipping collaborative apps, these days even a single user needs to sync his/her devices (see &lt;a href=&quot;https://www.apple.com/ios/whats-new/continuity/&quot;&gt;continuity&lt;/a&gt;).
+The device landscape is getting predominantly mobile, so an average user has multiple powerful devices with unreliable internet connections.&lt;/p&gt;
+
+&lt;p&gt;Popular solutions suck for one simple reason: common sense fails us in distributed systems.
+Proper sync needs some math like a GPS device needs some relativity formulas.
+Yes, that is just a box that says your &lt;em&gt;x&lt;/em&gt; and &lt;em&gt;y&lt;/em&gt;.
+No, it can’t work by common sense alone; it needs math.&lt;/p&gt;
+
+&lt;p&gt;In 2013, we released the &lt;a href=&quot;http://dailyjs.com/2013/05/06/swarm-dookie-angularjs-book/&quot;&gt;0.1 version&lt;/a&gt; of Swarm, which was, basically, some slap-together per-column &lt;a href=&quot;http://basho.com/tag/last-write-wins/&quot;&gt;last-write-wins&lt;/a&gt; solution, like &lt;a href=&quot;http://firebase.com&quot;&gt;Firebase&lt;/a&gt; and &lt;a href=&quot;http://www.datastax.com/dev/blog/why-cassandra-doesnt-need-vector-clocks&quot;&gt;many others&lt;/a&gt; are using.
+We already had the experience of implementing a &lt;a href=&quot;http://letters.yandex.ru&quot;&gt;real-time collaborative editor&lt;/a&gt; and we knew that LWW was not enough.
+So we reimplemented Swarm from scratch (twice) to have proper op-based &lt;a href=&quot;http://kellabyte.com/2013/05/20/convergent-replicated-data-types/&quot;&gt;CRDT&lt;/a&gt; as its base.&lt;/p&gt;
+
+&lt;p&gt;The result was like magic.&lt;/p&gt;
+
+&lt;h2 id=&quot;todomvc-real-time--offline-the-holiest-grail&quot;&gt;TodoMVC: real-time + offline, the holiest grail&lt;/h2&gt;
+
+&lt;p&gt;Switching from theory to practice, we decided to approach the standard &lt;a href=&quot;http://todomvc.com/&quot;&gt;TodoMVC&lt;/a&gt; app a bit more creatively to showcase all the interesting capabilities.
+Actually, the &lt;a href=&quot;https://github.com/andreypopp/todomvc-flux-swarm&quot;&gt;first Swarm+React TodoMVC&lt;/a&gt; was created by Andrey Popp on 15 July 2014, but that one was not &lt;em&gt;idiomatic&lt;/em&gt;.
+The &lt;a href=&quot;http://ppyr.us&quot;&gt;new demo&lt;/a&gt; can:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;synchronize in real-time (WebSocket),&lt;/li&gt;
+  &lt;li&gt;cache data at the client (WebStorage),&lt;/li&gt;
+  &lt;li&gt;load and work completely offline (Application Cache).&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Importantly, it employs a linear CRDT collection (Vector).
+That is different from both Swarm v0.1 and the July demo which used a set-sorting hack to make collections sort-of linear (same as Firebase).
+That is particularly important because serious approach to collaborative editing requires advanced linear collections (text is linear).&lt;/p&gt;
+
+&lt;iframe src=&quot;http://ppyr.us&quot; width=&quot;640&quot; height=&quot;400&quot; onload=&quot;window.scrollTo(0,0)&quot;&gt;&lt;/iframe&gt;
+
+&lt;p&gt;The app employs &lt;a href=&quot;https://github.com/gritzko/todomvc-swarm/tree/master/model&quot;&gt;Swarm models&lt;/a&gt; and &lt;a href=&quot;https://github.com/gritzko/todomvc-swarm/tree/master/view&quot;&gt;React views&lt;/a&gt;.
+It is important to notice that the code is written like it is a local &lt;a href=&quot;http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller&quot;&gt;MVC&lt;/a&gt; app.
+The only network-aware call in client-side code is &lt;em&gt;connect()&lt;/em&gt; which “plugs” the model into the server’s sync “outlet”.
+Later on, all the sync is done by Swarm in the background; update events are delivered to views using the popular &lt;em&gt;on()/off()&lt;/em&gt; subscription pattern, and even that is hidden inside &lt;a href=&quot;https://github.com/gritzko/swarm/blob/master/lib/ReactMixin.js&quot;&gt;ReactMixin&lt;/a&gt;.&lt;/p&gt;
+
+&lt;script src=&quot;https://gist.github.com/gritzko/b6a06d27627f37386c9d.js&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;The app is optimized for instant load using the &lt;a href=&quot;http://www.slideshare.net/spikebrehm/2014-0313fluent&quot;&gt;Holy Grail&lt;/a&gt; approach.
+All the views, models and even the &lt;a href=&quot;https://github.com/gritzko/todomvc-swarm/blob/master/todoRouter.js&quot;&gt;router&lt;/a&gt; are shared between client and server.
+The server-side code prerenders React views so the browser gets static HTML (fast).
+The page is made live once scripts and data arrive (slower).
+Holy Grail is critical, considering that React.js is rather heavy.
+The resulting page load latency is quite close to &lt;a href=&quot;http://en.wikipedia.org/wiki/Round-trip_delay_time&quot;&gt;RTT&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://swarmdb.net/images/timeline.png&quot; alt=&quot;Page load timeline&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Another interesting part is offline work.
+Swarm is able of caching all the data in the browser’s local storage.
+Thanks to CRDT merge features, the app may work offline and synchronize to the server on reconnect.
+That relieves the developer from the necessity to workaround temporary network failures.
+Swarm syncs the entire chain of replicas: back-end storage to server-side objects to client-side objects to browser storage.
+Every step of that chain may fail - because of server restarts, intermittent connections or simply a user closing his/her laptop.
+All such interruptions are solved by the unified syncing protocol that re-syncs data on re-connection.
+Just for comparison, &lt;a href=&quot;https://meteorhacks.com/introduction-to-ddp.html&quot;&gt;Meteor’s DDP&lt;/a&gt; lacks such versioning/resync features, which fact essentially turned it into yet-another rediscovery of &lt;a href=&quot;http://en.wikipedia.org/wiki/Remote_procedure_call&quot;&gt;RPC API&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Thanks to HTML5 Application Cache, the app essentially installs itself into the browser, so you may load and run it entirely offline.
+Thanks to CRDT, it can always resync later.
+Actually, it is often hard to tell whether the app is online or not.
+That provides some native-like app experience, except maybe for the fps aspect.&lt;/p&gt;
+
+&lt;p&gt;One more fine detail that is easy to miss.
+The app is able to sync by multiple channels at once. While other users and browsers are synced through the server, browser tabs sync by &lt;a href=&quot;http://www.w3.org/TR/webstorage/#the-storage-event&quot;&gt;WebStorage events&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;To explore the app’s collaborative features, please send the exact page link to your friend or open it in another browser.&lt;/p&gt;
+
+&lt;h2 id=&quot;what-is-the-big-picture&quot;&gt;What is the big picture?&lt;/h2&gt;
+
+&lt;p&gt;Essentially, Swarm is a data event bus shared between client and server.
+We think that such a data/event bus will become a standard component of the stack, very much like a database is today.
+Such a bus does a great deal of work to overcome friction in distributed systems, especially as the client becomes a full-featured part of it.
+Our idea is not entirely new; see e.g. &lt;a href=&quot;http://kafka.apache.org/&quot;&gt;Apache Kafka&lt;/a&gt;.
+The new part is to extend that bus to the client using CRDT.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://swarmdb.net/images/swarm-moscowjs-deployment.png&quot; alt=&quot;Swarm: deployment&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;I remember the times when my fellow developers were leery of the &lt;a href=&quot;http://www.hanselman.com/blog/CVSAndSubversionVsVSSSourceSafe.aspx&quot;&gt;CVS optimistic model&lt;/a&gt;. Back then, relativism of git was entirely unthinkable.
+On hearing of CRDTs, folks often ask about ACID which, most likely, they &lt;a href=&quot;http://t.co/KGkIlLOPtU&quot;&gt;don’t actually need&lt;/a&gt;.
+We believe that real-time sync middleware will have a transformative effect on the domain of web/mobile app development.
+That effect would be comparable to the one TCP had on internetworking, &lt;a href=&quot;http://www.worldshipping.org/about-the-industry/history-of-containerization&quot;&gt;containerization&lt;/a&gt; had on international logistics or git on version control systems.
+To arrive at the destination, we need to solve many difficult issues, like access control (more on that later) and reasonable consistency guarantees.&lt;/p&gt;
+
+&lt;p&gt;Once you have this kind of platform-level sync, features of user collaboration and continuity come virtually for free and server-side scaling becomes easy and robust.&lt;/p&gt;
+
+&lt;p&gt;So, feel free to play with the app, check it out on &lt;a href=&quot;https://github.com/gritzko/todomvc-swarm&quot;&gt;GitHub&lt;/a&gt;, try &lt;a href=&quot;http://github.com/gritzko/swarm&quot;&gt;the lib&lt;/a&gt; and subscribe to our &lt;a href=&quot;http://twitter.com/swarm_js&quot;&gt;twitter account&lt;/a&gt;.&lt;/p&gt;
+
+
+  
+  &lt;p&gt;&lt;a href=&quot;http://swarmdb.net/articles/todomvc/&quot;&gt;Swarm.js+React — real-time, offline-ready Holy Grail web apps&lt;/a&gt; was originally published by Victor Grishchenko at &lt;a href=&quot;http://swarmdb.net&quot;&gt;Swarm&lt;/a&gt; on October 14, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[An object as an event stream]]></title>
+  <link rel="alternate" type="text/html" href="http://swarmdb.net/articles/objects-are-event-streams/"/>
+  <id>http://swarmdb.net/articles/objects-are-event-streams</id>
+  <updated>2015-10-03T00:00:00-00:00</updated>
+  <published>2014-10-03T00:00:00-04:00</published>
+  
+  <author>
+    <name>Victor Grishchenko</name>
+    <uri>http://swarmdb.net</uri>
+    <email>victor.grishchenko@gmail.com</email>
+  </author>
+  
+  <content type="html">
+  
+    &lt;p&gt;Objects, events and streams are popular abstractions all around Computer Science. In Swarm, all three concepts kind of morph, so I feel the need to explain how Swarm became event-, stream- and object- oriented at the same time.&lt;/p&gt;
+
+&lt;p&gt;It definitely makes sense to start with definitions. By an &lt;em&gt;object&lt;/em&gt; we mean a readable/writeable &lt;a href=&quot;http://en.wikipedia.org/wiki/Object-oriented_programming&quot;&gt;OOP-style&lt;/a&gt; object. The only addition is that it may have multiple &lt;em&gt;replicas&lt;/em&gt; that need to stay in sync.  That adds a secondary requirement: object’s methods must decompose into syncable operations, more on that later.&lt;/p&gt;
+
+&lt;p&gt;Swarm replicates data with the granularity of a single object. That is different from e.g. database replication, where the entire dataset is mirrored over. As we deal with client-side replicas, that was not an option. We see Swarm’s object-centricity as an advantage over real-time sync technologies that are too creative on that front. The classic Entity-Relationship approach is well understood and maps nicely to SQL, noSQL, JSON, XML and, basically, everything else.&lt;/p&gt;
+
+&lt;p&gt;By an &lt;em&gt;event&lt;/em&gt; we mean a state change event, such that:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;if it changes no state, it is no “event” and&lt;/li&gt;
+  &lt;li&gt;every state change is an event (or multiple events).&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In fact, we use &lt;em&gt;event&lt;/em&gt; almost synonymously with &lt;em&gt;operation&lt;/em&gt; and, to a large degree, &lt;em&gt;method&lt;/em&gt;. Event is an “arrow” on the object’s state diagram. We are not discussing UI or IO events here, although in most cases those can be roughly mapped to state change events, or even mapped 1:1 in some simpler cases. For clarity, let’s call that operation-event-method an &lt;em&gt;op&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Ops are immutable&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Stream&lt;/em&gt; is a nice and ancient abstraction that allows either to write or to read data sequentially. Once we subscribe to an object, we receive a stream of state change events. That is different from the most popular pub-sub “channel” abstraction, where various events are dumped on a common &lt;em&gt;bus&lt;/em&gt;, but there is no direct relation between events and the state, and the bus is not a domain model object. Per-object granularity of event subscription fits reactive architectures much much better. Local state-change events are very popular in MVC architectures; Swarm extends that to distributed systems.&lt;/p&gt;
+
+&lt;p&gt;Often, that mutation/event stream is also named a &lt;em&gt;log&lt;/em&gt; or an &lt;em&gt;oplog&lt;/em&gt;. We understand streams as one-at-a-time event sources or sinks. Differently from streams, logs are assumed to contain all the operations in question, available at once.&lt;/p&gt;
+
+&lt;p&gt;Physicists call it “dualism” that a particle and a wave are different projections of the same entity. So, Swarm has dualism where an object and an event stream are projections of the same core principle. That dualism defines the architecture and further on extends to UI and IO behavior patterns. That is almost religious.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://swarmdb.net/images/mickey3nity.png&quot; alt=&quot;What Mickey means&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;A Swarm object is a stream of state change events, like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://swarmdb.net/images/streams.svg&quot; alt=&quot;An object is an event stream&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;A replica of an object produces a linear stream of state change events. That stream is read by other replicas; operations are applied, states are synchronized. That is in line with the master-slave replication scheme (like MySQL or MongoDB is using).&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://swarmdb.net/images/streams-slave.svg&quot; alt=&quot;Master-slave replication&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Master-slave replication is inherently one-way as the master does linearization of writes. That is at odds with decentralized function in its very general sense.
+Our objective is to let replicas work offline and under intermittent connectivity. Real-time communication, in general, demands latency independence. Even more generally, Swarm is built to function well in &lt;a href=&quot;http://swarmjs.github.io/articles/offline-is-async/&quot;&gt;asynchronous environments&lt;/a&gt;, which every distributed system actually is. That is why Swarm employs Commutative Replicated Data Types (CRDT).&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://pagesperso-systeme.lip6.fr/Marc.Shapiro/papers/RR-6956.pdf&quot;&gt;&lt;img src=&quot;http://swarmdb.net/images/crdt.png&quot; alt=&quot;CRDT definition&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;CRDT to master-slave is what git is to CVS. Every argument on why git is not centralized is equally applicable to Swarm.
+With CRDT, linearization is not needed, so every replica may send mutation events to other replicas.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://swarmdb.net/images/streams-CRDT.svg&quot; alt=&quot;CRDT replication&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In Lamport’s terms, our object replica is actually a &lt;em&gt;process&lt;/em&gt;, as it sends/receives &lt;em&gt;messages&lt;/em&gt; (ops) to/from other replicas asynchronously to sync the state. &lt;em&gt;Messages&lt;/em&gt; are marked with Lamport timestamps. Swarm employs timestamps to identify operations, track versions, produce patches, detect replays, order operations and for other purposes, see &lt;a href=&quot;http://swarmjs.github.io/articles/lamport/&quot;&gt;a detailed post&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Lamport’s model was not that much needed in the master-slave model as all the changes come from a single source. In the distributed model, it is critical for understanding. Lamport’s vocabulary is very popular in the CRDT literature.&lt;/p&gt;
+
+&lt;p&gt;We may see an object’s replica as a stream of state change events. Those events may come in slightly different orders at different replicas. Eventually, all replicas get all the events, so their states converge. Still, the correct understanding of a Swarm &lt;em&gt;object&lt;/em&gt; is more like “a Platonic ideal”. Practically, we can read some particular replica, not an “object” itself. We may understand an object as a complete &lt;em&gt;swarm&lt;/em&gt; of all its replicas, once it converges.&lt;/p&gt;
+
+&lt;p&gt;Further on, academic literature tends to distinct state- vs op-based CRDT types. Another common assumption is that replicas exchange uninterrupted flows of updates. Practically, that uninterrupted flow is an expensive and inconvenient abstraction. Intermittent connectivity is quite common with mobile devices, for example. Some objects may no longer be needed but we want a (maybe stale) replica to remain in the local cache. Finally, a user may always close his/her laptop and we have no idea how soon it will get back online. Hence, interrupting the event stream is a practical necessity.&lt;/p&gt;
+
+&lt;p&gt;The straightforward solution of machinegunning missed events on reconnection is grossly inefficient. Swarm’s underlying solution is a stream initiation handshake exchanging full or partial object states (snapshots or patches), so replicas may proceed with their continuous event streams further on. Actually, the logo of the project depicts a handshake.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://swarmdb.net/images/streams-gaps.svg&quot; alt=&quot;Handshakes and replication&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;So, any &lt;em&gt;object&lt;/em&gt; is actually a &lt;em&gt;replica&lt;/em&gt;. Any state change is an &lt;em&gt;op&lt;/em&gt;. If you listen to an op, it becomes an &lt;em&gt;event&lt;/em&gt;. If you originate it, it becomes a &lt;em&gt;method&lt;/em&gt;. All events on a replica form a &lt;em&gt;stream&lt;/em&gt;. A recorded stream is named a &lt;em&gt;log&lt;/em&gt; or &lt;em&gt;oplog&lt;/em&gt;. Finally, all those entities are just facets of the same ideal entity named “a replicated object”.&lt;/p&gt;
+
+&lt;p&gt;I hope, this post explains Swarm’s core abstractions to a sufficient degree.&lt;/p&gt;
+
+&lt;p&gt;P.S. My thanks to @apronchenkov for sharing useful feedback.&lt;/p&gt;
+
+  
+  &lt;p&gt;&lt;a href=&quot;http://swarmdb.net/articles/objects-are-event-streams/&quot;&gt;An object as an event stream&lt;/a&gt; was originally published by Victor Grishchenko at &lt;a href=&quot;http://swarmdb.net&quot;&gt;Swarm&lt;/a&gt; on October 03, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[Java version is in the works]]></title>
+  <link rel="alternate" type="text/html" href="http://swarmdb.net/articles/android-is-coming/"/>
+  <id>http://swarmdb.net/articles/android-is-coming</id>
+  <updated>2014-09-17T00:00:00-00:00</updated>
+  <published>2014-09-17T00:00:00-04:00</published>
+  
+  <author>
+    <name>Victor Grishchenko</name>
+    <uri>http://swarmdb.net</uri>
+    <email>victor.grishchenko@gmail.com</email>
+  </author>
+  
+  <content type="html">
+  
+    &lt;p&gt;Swarm is a generic CRDT-based model for data synchronization that works in real
+time. Swarm is highly tolerant to asynchronous environments, including the
+most extreme case of it: offline work. As an algorithm, Swarm can be
+implemented in any programming language. It was a little bit annoying that we
+only had a JavaScript version so far. Not anymore.&lt;/p&gt;
+
+&lt;p&gt;Finally, the Java version is making its first steps both on the server side and
+on Android devices:&lt;/p&gt;
+
+&lt;iframe width=&quot;560&quot; height=&quot;315&quot; src=&quot;//www.youtube.com/embed/KK1AjVvAfE8&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+
+&lt;p&gt;That brings us one step closer to the vision of replicated model being the new
+&lt;a href=&quot;http://www.gtresearchnews.gatech.edu/hourglass-internet-architecture/&quot;&gt;hourglass waist&lt;/a&gt; of distributed app architectures.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://swarmdb.net/images/swarm-moscowjs-deployment.png&quot; alt=&quot;Swarm: deployment&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Replicated model everywhere!&lt;/p&gt;
+
+
+  
+  &lt;p&gt;&lt;a href=&quot;http://swarmdb.net/articles/android-is-coming/&quot;&gt;Java version is in the works&lt;/a&gt; was originally published by Victor Grishchenko at &lt;a href=&quot;http://swarmdb.net&quot;&gt;Swarm&lt;/a&gt; on September 17, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[Offline first &sube; intermittent &sube; asynchronous]]></title>
+  <link rel="alternate" type="text/html" href="http://swarmdb.net/articles/offline-is-async/"/>
+  <id>http://swarmdb.net/articles/offline-is-async</id>
+  <updated>2014-08-26T00:00:00-00:00</updated>
+  <published>2014-08-27T00:00:00-04:00</published>
+  
+  <author>
+    <name>Victor Grishchenko</name>
+    <uri>http://swarmdb.net</uri>
+    <email>victor.grishchenko@gmail.com</email>
+  </author>
+  
+  <content type="html">
+  
+    &lt;p&gt;This post is mostly a comment to the &lt;a href=&quot;http://blog.hood.ie/2013/11/say-hello-to-offline-first/&quot;&gt;offline-first manifesto&lt;/a&gt;.
+After careful consideration, I am pretty certain that speaking of offline-first
+mobile/web apps is not that useful per se.
+Indeed, these days apps are mostly consumed on wireless devices (laptops,
+tablets, phones), so “offline” really happens. Strictly speaking, that
+even happens to datacenters time to time. But, “offline” is probably a wrong
+word for it. It is much more productive to speak about “intermittent
+connectivity”. Wireless connectivity &lt;em&gt;is&lt;/em&gt; unstable just because of the physics.
+There are device handovers, blind spots, mass gatherings, elevators and tonnels.
+A device might be kind of “online”, but it cannot fetch that data right now,
+sorry. Unless we’re considering military applications, “intermittent” reflects
+that point much better.&lt;/p&gt;
+
+&lt;p&gt;The next step is to accept that intermittent connectivity is just a corner
+case of the “asynchronous”. When we enter an elevator, our app will receive
+its API response one minute late. When a connection is “bad”, the app may receive its response
+ten seconds late. Is it that much different?
+Whether we are formally “online” or “offline” does not
+really matter. If the state changes before we get a response to our request,
+then we &lt;em&gt;are&lt;/em&gt; asynchronous. The RPC/HTTP world tries hard to conceal that fact, but
+concealing only works that far.&lt;/p&gt;
+
+&lt;p&gt;Asynchrony is pretty much everywhere in this world and it affects everything.
+In that regard, I recall a nice chat with a customer:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;C: You did a really good job optimizing the app last week! &lt;br /&gt;
+I: We did no optimization. By the way, where are you? &lt;br /&gt;
+C: I’m in New York. &lt;br /&gt;
+I: I see. We have our server there.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Mixing synchronous and asynchronous is like mixing beer and vodka: results are
+painful. Whether we speak of “callback hell”, “promises”, or “operational
+transformation”, the underlying tensions are rooted in the fact that we chase
+those two rabbits: synchronous logic and asynchronous communication.&lt;/p&gt;
+
+&lt;p&gt;Our current reality is massive amounts of users interacting in real time using
+mobile devices. The process is served by massive amounts of servers also
+interacting in real time. Everything is faulty, everything is distributed.
+Hence, everything is asynchronous.
+Reactive architectures, event buses, eventual consistency and all that new stuff
+reflects one important fact.
+We are on the road out of the Don Knuth’s world of perfect cause-and-effect
+train-of-thought logic towards a new world that is more alike to biological
+signaling pathways: efficient, massive, fault-tolerant and apparently chaotic
+to an untrained eye.&lt;/p&gt;
+
+&lt;p&gt;Well then, what “offline first” is useful for? I think, it is a really good
+criteria to evaluate how async-friendly you are. Very much like &lt;a href=&quot;http://highscalability.com/blog/2010/12/28/netflix-continually-test-by-failing-servers-with-chaos-monke.html&quot;&gt;fire drill&lt;/a&gt;
+techniques, running your app offline tests how good you are at handling all the
+zillion varieties of asynchrony simply by taking it to the extreme.&lt;/p&gt;
+
+  
+  &lt;p&gt;&lt;a href=&quot;http://swarmdb.net/articles/offline-is-async/&quot;&gt;Offline first &sube; intermittent &sube; asynchronous&lt;/a&gt; was originally published by Victor Grishchenko at &lt;a href=&quot;http://swarmdb.net&quot;&gt;Swarm&lt;/a&gt; on August 27, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[MoscowJS slides]]></title>
+  <link rel="alternate" type="text/html" href="http://swarmdb.net/articles/moscowjs/"/>
+  <id>http://swarmdb.net/articles/moscowjs</id>
+  <updated>2014-07-25T00:00:00-00:00</updated>
+  <published>2014-07-25T00:00:00-04:00</published>
+  
+  <author>
+    <name>Victor Grishchenko</name>
+    <uri>http://swarmdb.net</uri>
+    <email>victor.grishchenko@gmail.com</email>
+  </author>
+  
+  <content type="html">
+  
+    &lt;p&gt;About a week ago I presented Swarm.js at the
+&lt;a href=&quot;http://www.moscowjs.ru/&quot;&gt;MoscowJS&lt;/a&gt; meetup.
+The talk generated substantial interest.
+Well, I was asked questions till the security asked us all to
+leave the building :)
+Slides can be seen on Slideshare:&lt;/p&gt;
+
+&lt;iframe src=&quot;//www.slideshare.net/slideshow/embed_code/37079099&quot; width=&quot;427&quot; height=&quot;356&quot; frameborder=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; scrolling=&quot;no&quot; style=&quot;border:1px solid #CCC;
+border-width:1px; margin-bottom:5px; max-width: 100%;&quot; allowfullscreen=&quot;&quot;&gt; &lt;/iframe&gt;
+&lt;div style=&quot;margin-bottom:5px&quot;&gt; &lt;strong&gt; &lt;a href=&quot;https://www.slideshare.net/moscowjs/swarmjs&quot; title=&quot;Swarm.js:
+реактивная синхронизация данных — Виктор Грищенко — MoscowJS 13&quot; target=&quot;_blank&quot;&gt;Swarm.js: реактивная синхронизация данных — Виктор
+Грищенко — MoscowJS 13&lt;/a&gt; &lt;/strong&gt; from &lt;strong&gt;&lt;a href=&quot;http://www.slideshare.net/moscowjs&quot; target=&quot;_blank&quot;&gt;MoscowJS&lt;/a&gt;&lt;/strong&gt; &lt;/div&gt;
+
+&lt;p&gt;The slides are in Russian, kind of, but two key slides are perfectly
+readable in any language.
+First, that is the deployments scenario for Swarm.js:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://swarmdb.net/images/swarm-moscowjs-deployment.png&quot; alt=&quot;Swarm: deployment&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;That is, basically, Redis meets Pusher: server-side component both
+caches objects and relays changes to client-side replicas.
+In the most straightforward scenario, the server runs node.js thus
+fully duplicating client-side logic.&lt;/p&gt;
+
+&lt;p&gt;That brings several advantages.
+First and foremost, the logic is implemented just once.
+Second, the server may always render static HTML for the client thus a
+new client is sent static gzipped HTML (fast), then downloads
+JSON and makes the page “live” (slow).
+That capability was nicknamed “holy grail” by some.
+Third, it streamlines development a lot that code paths are unified for local
+and remote operations, also client-to-server and server-to-client event
+propagation.&lt;/p&gt;
+
+&lt;p&gt;There are disadvantages as well.
+At scale, running a full clone of each client on the server
+might turn expensive.
+So, sometimes it makes more sense to make that “event switching bus” as
+dumb as possible, while running JavaScript logic in batch mode.
+Also, security freaks may dislike the fact that server-side logic is
+available for inspection. Well, security by obscurity is harmful in
+the long run, but it works to some degree anyways.&lt;/p&gt;
+
+&lt;p&gt;Another slide nicely depicts our dream: developing real-time
+offline-ready apps with the ease of classic local MVC apps.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://swarmdb.net/images/swarm-moscowjs-mvc.png&quot; alt=&quot;Swarm: deployment&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Replicated model is the key!&lt;/p&gt;
+
+  
+  &lt;p&gt;&lt;a href=&quot;http://swarmdb.net/articles/moscowjs/&quot;&gt;MoscowJS slides&lt;/a&gt; was originally published by Victor Grishchenko at &lt;a href=&quot;http://swarmdb.net&quot;&gt;Swarm&lt;/a&gt; on July 25, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[Swarm/Lamport timestamps]]></title>
+  <link rel="alternate" type="text/html" href="http://swarmdb.net/articles/lamport/"/>
+  <id>http://swarmdb.net/articles/lamport</id>
+  <updated>2015-09-17T00:00:00-00:00</updated>
+  <published>2014-07-15T00:00:00-04:00</published>
+  
+  <author>
+    <name>Victor Grishchenko</name>
+    <uri>http://swarmdb.net</uri>
+    <email>victor.grishchenko@gmail.com</email>
+  </author>
+  
+  <content type="html">
+  
+    &lt;p&gt;&lt;a href=&quot;http://en.wikipedia.org/wiki/Lamport_timestamps&quot;&gt;Lamport timestamps&lt;/a&gt; are necessary to sort out event order and causality
+issues in a distributed system.  The original &lt;a href=&quot;http://research.microsoft.com/en-us/um/people/lamport/pubs/time-clocks.pdf&quot;&gt;article&lt;/a&gt; defines
+Lamport clocks as, essentially, a tuple of a number (plain timestamp) and a
+process id.  Each process stamps its new event with a number, assuming it is
+greater than any previously known timestamp number.  Concurrent events created
+by different processes may have equal timestamp numbers.  Such tie is resolved
+in an arbitrary but consistent way, namely by comparing (unique) process ids.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://swarmdb.net/images/cite-lamport.png&quot; alt=&quot;Lamport: total order definition&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Timing of an event may turn equally useful from the end-user perspective
+(remember that “1m”, “2h” grey labels on Twitter, for example). But, using the
+same timestamp both ways (for causal and wall clock time) is actually quite
+tricky.  On one hand, computer clocks tend to be less precise than necessary,
+especially considering that events propagate by the network with the speed of
+light. That is especially true for end-user computer clock which may be off by
+an hour. On the other hand, logical Lamport time is generally not supposed to
+reflect wall clock time at all; “logical timestamps” means “counters” in most
+of the cases.&lt;/p&gt;
+
+&lt;p&gt;The rich man approach to the problem is to install atomic clocks and satellite
+receivers to datacenters so machine time is very precise.  Then, computer
+clocks become somewhat useful for handling causality/order issues (see Google
+Spanner).&lt;/p&gt;
+
+&lt;p&gt;Swarm is an operation-based CRDT engine where every event is marked with a
+Lamport timestamp.  In our past projects we used Lamport timestamps literally
+defined as a pair of integers. That approach was not good enough for the
+general case, so finally we settled on the following scheme:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://swarmdb.net/images/spec.png&quot; alt=&quot;Swarm specifiers (compound event identifiers)&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The Lamport timestamp is &lt;code&gt;!8V7N809+Walt~ssn&lt;/code&gt;. Both parts of the timestamp are
+different from the “literal” scheme.  First, the “number” component is an
+actual &lt;a href=&quot;https://github.com/gritzko/swarm/blob/master/lib/SecondPreciseClock.js#L61&quot;&gt;timestamp in base64&lt;/a&gt;. &lt;code&gt;8V7N8&lt;/code&gt; is 142374344 seconds since 1 Jan
+2010, while &lt;code&gt;09&lt;/code&gt; is a sequence number used to create multiple events a second.
+Second, the “process id” is a combination of a user id (like &lt;code&gt;Walt&lt;/code&gt;) and a
+session id (like &lt;code&gt;ssn&lt;/code&gt;).  It is an extremely useful feature to see the author
+of an event straight from the event id.  Session id is needed to denote
+different sessions of the same user (like Chrome on a home PC and Safari on a
+laptop).  While sessions share same data and same credentials, in terms of the
+Lamport model they are concurrent processes generating independent events.
+These compound timestamps can be compared lexicographically, have all the
+necessary logical timestamp features and (tadaam) provide basic information on
+the event, such as wall clock time and the author id.&lt;/p&gt;
+
+&lt;p&gt;That scheme assumes some level of clock synchronization between replicas.
+Practically, web clients with bad clocks must coordinate with their server
+to stay reasonably correct.&lt;/p&gt;
+
+&lt;p&gt;Swarm implements two other timestamp schemes: purely logical LamportClocks
+and MinutePreciseClocks if you do not care about seconds.
+It is up to the developer to pick the most convenient one.&lt;/p&gt;
+
+&lt;p&gt;I hope, that explains that slightly unfamiliar look of Lamport timestamps in Swarm.&lt;/p&gt;
+
+
+  
+  &lt;p&gt;&lt;a href=&quot;http://swarmdb.net/articles/lamport/&quot;&gt;Swarm/Lamport timestamps&lt;/a&gt; was originally published by Victor Grishchenko at &lt;a href=&quot;http://swarmdb.net&quot;&gt;Swarm&lt;/a&gt; on July 15, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[Swarm 0.3 is released]]></title>
+  <link rel="alternate" type="text/html" href="http://swarmdb.net/articles/release/"/>
+  <id>http://swarmdb.net/articles/release</id>
+  <updated>2014-07-14T00:00:00-00:00</updated>
+  <published>2014-07-14T00:00:00-04:00</published>
+  
+  <author>
+    <name>Victor Grishchenko</name>
+    <uri>http://swarmdb.net</uri>
+    <email>victor.grishchenko@gmail.com</email>
+  </author>
+  
+  <content type="html">
+  
+    &lt;p&gt;After a year of work, we finally release the third iteration of the 
+&lt;a href=&quot;https://github.com/gritzko/swarm&quot;&gt;Swarm library on Github&lt;/a&gt;.
+Swarm is a reactive data sync lib that provides a replicated model for your web app (like M in &lt;a href=&quot;http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller&quot;&gt;MVC&lt;/a&gt;).
+Swarm syncs in real time and also works offline.&lt;/p&gt;
+
+&lt;p&gt;This time, it goes beyond timestamped &lt;a href=&quot;http://basho.com/tag/last-write-wins/&quot;&gt;Last-Write-Wins&lt;/a&gt; objects.
+LWW was simple to implement and understand, but it was not nearly good enough for complex concurrent apps, e.g. collaborative editors.
+Swarm 0.3 has a “pure op-based” &lt;a href=&quot;http://kellabyte.com/2013/05/20/convergent-replicated-data-types/&quot;&gt;CRDT&lt;/a&gt; foundation with LWW objects and CT text editing implemented on top of that.
+I am still amazed how we fit it all into 2KLoC of JavaScript :)&lt;/p&gt;
+
+&lt;p&gt;Swarm is essentially a toolkit to build ditributed real-time offline-ready MVC apps where all the “ditributedness” is nicely encapsulated in a replicated Model.
+So, View and Controller may act locally (and think globally, you know).
+Please check our little &lt;a href=&quot;http://ppyr.us:8000/example/demo3/index.html&quot;&gt;demo and manifest&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;In the coming weeks, I will post more design/implementation details on this blog.&lt;/p&gt;
+
+  
+  &lt;p&gt;&lt;a href=&quot;http://swarmdb.net/articles/release/&quot;&gt;Swarm 0.3 is released&lt;/a&gt; was originally published by Victor Grishchenko at &lt;a href=&quot;http://swarmdb.net&quot;&gt;Swarm&lt;/a&gt; on July 14, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
   <title type="html"><![CDATA[Logs and docs]]></title>
-  <link rel="alternate" type="text/html" href="http://swarmjs.github.io/articles/on-kreps/"/>
-  <id>http://swarmjs.github.io/articles/on-kreps</id>
+  <link rel="alternate" type="text/html" href="http://swarmdb.net/articles/on-kreps/"/>
+  <id>http://swarmdb.net/articles/on-kreps</id>
   <updated>2013-05-31T00:00:00-00:00</updated>
   <published>2013-12-17T00:00:00-05:00</published>
   
   <author>
     <name>Victor Grishchenko</name>
-    <uri>http://swarmjs.github.io</uri>
+    <uri>http://swarmdb.net</uri>
     <email>victor.grishchenko@gmail.com</email>
   </author>
   
@@ -63,7 +868,7 @@ WiFi flaps badly, you may not even notice that. GDocs implemented
 offline mode after some years of work and it works sorta conditionally
 (i.e. there are caveats, like a native extension is needed and the
 browser must be Chrome). This villariba-villabajo story definitely
-deserves some explanation. &lt;/p&gt;
+deserves some explanation.&lt;/p&gt;
 
 &lt;p&gt;In a
 real-time collaborative editor, concurrent operations come “faster”
@@ -129,7 +934,7 @@ a partially ordered log.&lt;/p&gt;
 coming.&lt;/p&gt;
 
   
-  &lt;p&gt;&lt;a href=&quot;http://swarmjs.github.io/articles/on-kreps/&quot;&gt;Logs and docs&lt;/a&gt; was originally published by Victor Grishchenko at &lt;a href=&quot;http://swarmjs.github.io&quot;&gt;Swarm.js&lt;/a&gt; on December 17, 2013.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://swarmdb.net/articles/on-kreps/&quot;&gt;Logs and docs&lt;/a&gt; was originally published by Victor Grishchenko at &lt;a href=&quot;http://swarmdb.net&quot;&gt;Swarm&lt;/a&gt; on December 17, 2013.&lt;/p&gt;</content>
 </entry>
 
 </feed>

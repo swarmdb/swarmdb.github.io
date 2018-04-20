@@ -1,0 +1,329 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>An object as an event stream &#8211; Swarm</title>
+<meta name="description" content="reactive data sync middleware">
+<meta name="keywords" content="">
+
+<!-- Twitter Cards -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="//swarmdb.net/images/day_and_night.jpg">
+
+<meta name="twitter:title" content="An object as an event stream">
+<meta name="twitter:description" content="reactive data sync middleware">
+<meta name="twitter:creator" content="@swarmsync">
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="article">
+<meta property="og:title" content="An object as an event stream">
+<meta property="og:description" content="reactive data sync middleware">
+<meta property="og:url" content="//swarmdb.net/articles/objects-are-event-streams/">
+<meta property="og:site_name" content="Swarm">
+
+
+
+
+
+<link rel="canonical" href="//swarmdb.net/articles/objects-are-event-streams/">
+<link href="//swarmdb.net/feed.xml" type="application/atom+xml" rel="alternate" title="Swarm Feed">
+
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="//swarmdb.net/assets/css/main.min.css">
+<!-- Webfonts -->
+<script src="//use.edgefonts.net/source-sans-pro:n2,i2,n3,i3,n4,i4,n6,i6,n7,i7,n9,i9;source-code-pro:n4,n7;volkhov.js"></script>
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- Load Modernizr -->
+<script src="//swarmdb.net/assets/js/vendor/modernizr-2.6.2.custom.min.js"></script>
+
+<!-- Icons -->
+<!-- 16x16 -->
+<link rel="shortcut icon" href="//swarmdb.net/favicon.ico">
+<!-- 32x32 -->
+<link rel="shortcut icon" href="//swarmdb.net/favicon.png">
+<!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+<link rel="apple-touch-icon-precomposed" href="//swarmdb.net/images/apple-touch-icon-precomposed.png">
+<!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="//swarmdb.net/images/apple-touch-icon-72x72-precomposed.png">
+<!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="//swarmdb.net/images/apple-touch-icon-114x114-precomposed.png">
+<!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="//swarmdb.net/images/apple-touch-icon-144x144-precomposed.png">
+
+</head>
+
+<body id="post">
+
+<div class="navigation-wrapper">
+	<nav role="navigation" id="site-nav" class="animated drop">
+	    <ul>
+	        
+			<li>
+				
+					<a href="//swarmdb.net/about/">About</a>
+				 
+			</li>
+	        
+			<li>
+				
+					<a href="//swarmdb.net/articles/">Articles</a>
+				 
+			</li>
+	        
+			<li>
+				
+					<a href="https://olebedev.github.io/mice">Demo</a>
+				 
+			</li>
+	        
+			<li>
+				
+					<a href="http://github.com/gritzko/swarm">GitHub</a>
+				 
+			</li>
+	        
+	        <li><a href="//swarmdb.net/feed.xml" title="Atom/RSS feed"><i class="icon-rss"></i> Feed</a></li>
+	        <li class="dosearch"><i class="icon-search"></i> Search</li>
+	    </ul>
+	</nav>
+</div><!-- /.navigation-wrapper -->
+
+<!--[if lt IE 9]><div class="upgrade"><strong><a href="http://whatbrowser.org/">Your browser is quite old!</strong> Why not upgrade to a different browser to better enjoy this site?</a></div><![endif]-->
+
+<div class="search-wrapper">
+	<div class="search-form">
+		<input type="text" class="search-field" placeholder="Search...">
+		<i class="icon-remove-sign icon-2x"></i>
+		<ul class="search-results post-list"></ul><!-- /.search-results -->
+	</div><!-- /.search-form -->
+</div><!-- ./search-wrapper -->
+
+<header class="masthead">
+	
+		<div class="wrap">
+			<a href="//swarmdb.net/" class="site-logo" rel="home" title="Swarm"><img src="//swarmdb.net/images/site-logo.png" width="200" height="200" alt="Swarm logo" class="animated bounceInDown"></a>
+		</div>
+	
+</header><!-- /.masthead -->
+
+
+
+<div id="main" role="main">
+  <article class="hentry">
+    <img src="//swarmdb.net/images/day_and_night.jpg" class="entry-feature-image" alt="An object as an event stream" ><p class="image-credit">Photo Credit: <a href="">M.C.Escher</a>
+    <div class="entry-wrapper">
+      <header class="entry-header">
+        <span class="entry-tags"></span>
+        
+          <h1 class="entry-title">An object as an event stream</h1>
+        
+      </header>
+      <footer class="entry-meta">
+        <img src="//swarmdb.net/images/selfie.jpg" alt="Victor Grishchenko photo" class="author-photo">
+        <span class="author vcard">By <span class="fn"><a href="//swarmdb.net/about/" title="About Victor Grishchenko">Victor Grishchenko</a></span></span>
+        <span class="entry-date date published"><time datetime="2014-10-03T00:00:00-04:00"><i class="icon-calendar-empty"></i> October 03, 2014</time></span>
+        <span class="entry-date date modified"><time datetime="2015-10-03"><i class="icon-pencil"></i> October 03, 2015</time></span>
+        <span class="entry-comments"><i class="icon-comment-alt"></i> <a href="#disqus_thread">Comment</a></span>
+        <span><a href="//swarmdb.net/articles/objects-are-event-streams/" rel="bookmark" title="An object as an event stream"><i class="icon-link"></i> Permalink</a></span>
+        
+        <span class="social-share-facebook">
+            <a href="https://www.facebook.com/sharer/sharer.php?u=//swarmdb.net/articles/objects-are-event-streams/" title="Share on Facebook" itemprop="Facebook"><i class="icon-facebook-sign"></i> Like</a></span>
+        <span class="social-share-twitter">
+            <a href="https://twitter.com/intent/tweet?hashtags=articles&text=An object as an event stream&url=//swarmdb.net/articles/objects-are-event-streams/&via=swarmsync" title="Share on Twitter" itemprop="Twitter"><i class="icon-twitter-sign"></i> Tweet</a></span>
+        <span class="social-share-googleplus">
+            <a href="https://plus.google.com/share?url=//swarmdb.net/articles/objects-are-event-streams/" title="Share on Google Plus" itemprop="GooglePlus"><i class="icon-google-plus-sign"></i> +1</a></span>
+            <!-- /.social-share -->
+      </footer>
+      <div class="entry-content">
+        <p>Objects, events and streams are popular abstractions all around Computer Science. In Swarm, all three concepts kind of morph, so I feel the need to explain how Swarm became event-, stream- and object- oriented at the same time.</p>
+
+<p>It definitely makes sense to start with definitions. By an <em>object</em> we mean a readable/writeable <a href="http://en.wikipedia.org/wiki/Object-oriented_programming">OOP-style</a> object. The only addition is that it may have multiple <em>replicas</em> that need to stay in sync.  That adds a secondary requirement: object’s methods must decompose into syncable operations, more on that later.</p>
+
+<p>Swarm replicates data with the granularity of a single object. That is different from e.g. database replication, where the entire dataset is mirrored over. As we deal with client-side replicas, that was not an option. We see Swarm’s object-centricity as an advantage over real-time sync technologies that are too creative on that front. The classic Entity-Relationship approach is well understood and maps nicely to SQL, noSQL, JSON, XML and, basically, everything else.</p>
+
+<p>By an <em>event</em> we mean a state change event, such that:</p>
+
+<ul>
+  <li>if it changes no state, it is no “event” and</li>
+  <li>every state change is an event (or multiple events).</li>
+</ul>
+
+<p>In fact, we use <em>event</em> almost synonymously with <em>operation</em> and, to a large degree, <em>method</em>. Event is an “arrow” on the object’s state diagram. We are not discussing UI or IO events here, although in most cases those can be roughly mapped to state change events, or even mapped 1:1 in some simpler cases. For clarity, let’s call that operation-event-method an <em>op</em>.</p>
+
+<p>Ops are immutable</p>
+
+<p><em>Stream</em> is a nice and ancient abstraction that allows either to write or to read data sequentially. Once we subscribe to an object, we receive a stream of state change events. That is different from the most popular pub-sub “channel” abstraction, where various events are dumped on a common <em>bus</em>, but there is no direct relation between events and the state, and the bus is not a domain model object. Per-object granularity of event subscription fits reactive architectures much much better. Local state-change events are very popular in MVC architectures; Swarm extends that to distributed systems.</p>
+
+<p>Often, that mutation/event stream is also named a <em>log</em> or an <em>oplog</em>. We understand streams as one-at-a-time event sources or sinks. Differently from streams, logs are assumed to contain all the operations in question, available at once.</p>
+
+<p>Physicists call it “dualism” that a particle and a wave are different projections of the same entity. So, Swarm has dualism where an object and an event stream are projections of the same core principle. That dualism defines the architecture and further on extends to UI and IO behavior patterns. That is almost religious.</p>
+
+<p><img src="//swarmdb.net/images/mickey3nity.png" alt="What Mickey means" /></p>
+
+<p>A Swarm object is a stream of state change events, like this:</p>
+
+<p><img src="//swarmdb.net/images/streams.svg" alt="An object is an event stream" /></p>
+
+<p>A replica of an object produces a linear stream of state change events. That stream is read by other replicas; operations are applied, states are synchronized. That is in line with the master-slave replication scheme (like MySQL or MongoDB is using).</p>
+
+<p><img src="//swarmdb.net/images/streams-slave.svg" alt="Master-slave replication" /></p>
+
+<p>Master-slave replication is inherently one-way as the master does linearization of writes. That is at odds with decentralized function in its very general sense.
+Our objective is to let replicas work offline and under intermittent connectivity. Real-time communication, in general, demands latency independence. Even more generally, Swarm is built to function well in <a href="http://swarmjs.github.io/articles/offline-is-async/">asynchronous environments</a>, which every distributed system actually is. That is why Swarm employs Commutative Replicated Data Types (CRDT).</p>
+
+<p><a href="http://pagesperso-systeme.lip6.fr/Marc.Shapiro/papers/RR-6956.pdf"><img src="//swarmdb.net/images/crdt.png" alt="CRDT definition" /></a></p>
+
+<p>CRDT to master-slave is what git is to CVS. Every argument on why git is not centralized is equally applicable to Swarm.
+With CRDT, linearization is not needed, so every replica may send mutation events to other replicas.</p>
+
+<p><img src="//swarmdb.net/images/streams-CRDT.svg" alt="CRDT replication" /></p>
+
+<p>In Lamport’s terms, our object replica is actually a <em>process</em>, as it sends/receives <em>messages</em> (ops) to/from other replicas asynchronously to sync the state. <em>Messages</em> are marked with Lamport timestamps. Swarm employs timestamps to identify operations, track versions, produce patches, detect replays, order operations and for other purposes, see <a href="http://swarmjs.github.io/articles/lamport/">a detailed post</a>.</p>
+
+<p>Lamport’s model was not that much needed in the master-slave model as all the changes come from a single source. In the distributed model, it is critical for understanding. Lamport’s vocabulary is very popular in the CRDT literature.</p>
+
+<p>We may see an object’s replica as a stream of state change events. Those events may come in slightly different orders at different replicas. Eventually, all replicas get all the events, so their states converge. Still, the correct understanding of a Swarm <em>object</em> is more like “a Platonic ideal”. Practically, we can read some particular replica, not an “object” itself. We may understand an object as a complete <em>swarm</em> of all its replicas, once it converges.</p>
+
+<p>Further on, academic literature tends to distinct state- vs op-based CRDT types. Another common assumption is that replicas exchange uninterrupted flows of updates. Practically, that uninterrupted flow is an expensive and inconvenient abstraction. Intermittent connectivity is quite common with mobile devices, for example. Some objects may no longer be needed but we want a (maybe stale) replica to remain in the local cache. Finally, a user may always close his/her laptop and we have no idea how soon it will get back online. Hence, interrupting the event stream is a practical necessity.</p>
+
+<p>The straightforward solution of machinegunning missed events on reconnection is grossly inefficient. Swarm’s underlying solution is a stream initiation handshake exchanging full or partial object states (snapshots or patches), so replicas may proceed with their continuous event streams further on. Actually, the logo of the project depicts a handshake.</p>
+
+<p><img src="//swarmdb.net/images/streams-gaps.svg" alt="Handshakes and replication" /></p>
+
+<p>So, any <em>object</em> is actually a <em>replica</em>. Any state change is an <em>op</em>. If you listen to an op, it becomes an <em>event</em>. If you originate it, it becomes a <em>method</em>. All events on a replica form a <em>stream</em>. A recorded stream is named a <em>log</em> or <em>oplog</em>. Finally, all those entities are just facets of the same ideal entity named “a replicated object”.</p>
+
+<p>I hope, this post explains Swarm’s core abstractions to a sufficient degree.</p>
+
+<p>P.S. My thanks to @apronchenkov for sharing useful feedback.</p>
+
+        <div id="disqus_thread"></div><!-- /#disqus_thread -->
+      </div><!-- /.entry-content -->
+    </div><!-- /.entry-wrapper -->
+    <nav class="pagination" role="navigation">
+      
+        <a href="//swarmdb.net/articles/android-is-coming/" class="btn" title="Java version is in the works">Previous article</a>
+      
+      
+        <a href="//swarmdb.net/articles/todomvc/" class="btn" title="Swarm.js+React — real-time, offline-ready Holy Grail web apps">Next article</a>
+      
+    </nav><!-- /.pagination -->
+  </article>
+</div><!-- /#main -->
+
+<div class="footer-wrapper">
+  <footer role="contentinfo">
+    <span>&copy; 2018 Victor Grishchenko. Powered by <a href="http://jekyllrb.com">Jekyll</a> using the <a href="http://mademistakes.com/so-simple/">So Simple Theme</a>.</span>
+<div class="social-icons">
+	<a href="http://twitter.com/swarmsync" title="Victor Grishchenko on Twitter" target="_blank"><i class="icon-twitter icon-2x"></i></a>
+	
+	
+	
+	
+	
+	
+	<a href="http://github.com/swarmdb" title="Victor Grishchenko on Github" target="_blank"><i class="icon-github icon-2x"></i></a>
+	
+</div><!-- /.social-icons -->
+  </footer>
+</div><!-- /.footer-wrapper -->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="//swarmdb.net/assets/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="//swarmdb.net/assets/js/scripts.min.js"></script>
+
+<!-- Jekyll Simple Search option -->
+<script>
+  $(document).ready(function() {
+      $('.search-field').simpleJekyllSearch({
+          jsonFile : '//swarmdb.net/search.json',
+          searchResults : '.search-results',
+          template : '<li><article><a href="{url}">{title} <span class="entry-date"><time datetime="{date}">{shortdate}</time></span></a></article></li>',
+          noResults: '<p>Nothing found.</p>'
+        });
+  });
+
+  (function( $, window, undefined ) {
+    
+     var bs = {
+          close: $(".icon-remove-sign"),
+          searchform: $(".search-form"),
+          canvas: $("body"),
+          dothis: $('.dosearch')
+      };
+    
+    bs.dothis.on('click', function() {
+      $('.search-wrapper').css({ display: "block" });
+      bs.searchform.toggleClass('active');
+      bs.searchform.find('input').focus();
+      bs.canvas.toggleClass('search-overlay');
+    });
+    
+      bs.close.on('click', function() {
+        $('.search-wrapper').removeAttr( 'style' );
+        bs.searchform.toggleClass('active');
+        bs.canvas.removeClass('search-overlay');
+    });
+  })( jQuery, window );
+</script>
+
+
+<!-- Asynchronous Google Analytics snippet -->
+<script>
+//   var _gaq = _gaq || [];
+//   var pluginUrl = 
+//  '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+//   _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+//   _gaq.push(['_setAccount', 'UA-46399542-5']);
+//   _gaq.push(['_trackPageview']);
+//
+//   (function() {
+//     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+//     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+//     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+//   })();
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-46399542-5', 'auto');
+  ga('send', 'pageview');
+</script>
+
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'swarmjs'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+	        
+
+</body>
+</html>

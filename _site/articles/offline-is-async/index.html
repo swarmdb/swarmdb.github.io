@@ -5,30 +5,30 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
 <head>
 <meta charset="utf-8">
-<title>Swarm — reactive data sync lib &#8211; Swarm</title>
+<title>Offline first &sube; intermittent &sube; asynchronous &#8211; Swarm</title>
 <meta name="description" content="reactive data sync middleware">
-<meta name="keywords" content="Jekyll, theme, simple, minimal, minimalism, responsive">
+<meta name="keywords" content="">
 
 <!-- Twitter Cards -->
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="//swarmdb.net/images/site-logo.png">
-<meta name="twitter:title" content="Swarm — reactive data sync lib">
+<meta name="twitter:title" content="Offline first &sube; intermittent &sube; asynchronous">
 <meta name="twitter:description" content="reactive data sync middleware">
 <meta name="twitter:creator" content="@swarmsync">
 
 <!-- Open Graph -->
 <meta property="og:locale" content="en_US">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Swarm — reactive data sync lib">
+<meta property="og:title" content="Offline first &sube; intermittent &sube; asynchronous">
 <meta property="og:description" content="reactive data sync middleware">
-<meta property="og:url" content="//swarmdb.net/about/">
+<meta property="og:url" content="//swarmdb.net/articles/offline-is-async/">
 <meta property="og:site_name" content="Swarm">
 
 
 
 
 
-<link rel="canonical" href="//swarmdb.net/about/">
+<link rel="canonical" href="//swarmdb.net/articles/offline-is-async/">
 <link href="//swarmdb.net/feed.xml" type="application/atom+xml" rel="alternate" title="Swarm Feed">
 
 
@@ -63,7 +63,7 @@
 
 </head>
 
-<body id="page">
+<body id="post">
 
 <div class="navigation-wrapper">
 	<nav role="navigation" id="site-nav" class="animated drop">
@@ -121,35 +121,96 @@
 
 
 <div id="main" role="main">
-  <article class="entry">
+  <article class="hentry">
     
     <div class="entry-wrapper">
       <header class="entry-header">
-        <h1 class="entry-title">Swarm — reactive data sync lib</h1>
+        <span class="entry-tags"></span>
+        
+          <h1 class="entry-title">Offline first &sube; intermittent &sube; asynchronous</h1>
+        
       </header>
+      <footer class="entry-meta">
+        <img src="//swarmdb.net/images/selfie.jpg" alt="Victor Grishchenko photo" class="author-photo">
+        <span class="author vcard">By <span class="fn"><a href="//swarmdb.net/about/" title="About Victor Grishchenko">Victor Grishchenko</a></span></span>
+        <span class="entry-date date published"><time datetime="2014-08-27T00:00:00-04:00"><i class="icon-calendar-empty"></i> August 27, 2014</time></span>
+        <span class="entry-date date modified"><time datetime="2014-08-26"><i class="icon-pencil"></i> August 26, 2014</time></span>
+        <span class="entry-comments"><i class="icon-comment-alt"></i> <a href="#disqus_thread">Comment</a></span>
+        <span><a href="//swarmdb.net/articles/offline-is-async/" rel="bookmark" title="Offline first &sube; intermittent &sube; asynchronous"><i class="icon-link"></i> Permalink</a></span>
+        
+        <span class="social-share-facebook">
+            <a href="https://www.facebook.com/sharer/sharer.php?u=//swarmdb.net/articles/offline-is-async/" title="Share on Facebook" itemprop="Facebook"><i class="icon-facebook-sign"></i> Like</a></span>
+        <span class="social-share-twitter">
+            <a href="https://twitter.com/intent/tweet?hashtags=articles&text=Offline first &sube; intermittent &sube; asynchronous&url=//swarmdb.net/articles/offline-is-async/&via=swarmsync" title="Share on Twitter" itemprop="Twitter"><i class="icon-twitter-sign"></i> Tweet</a></span>
+        <span class="social-share-googleplus">
+            <a href="https://plus.google.com/share?url=//swarmdb.net/articles/offline-is-async/" title="Share on Google Plus" itemprop="GooglePlus"><i class="icon-google-plus-sign"></i> +1</a></span>
+            <!-- /.social-share -->
+      </footer>
       <div class="entry-content">
-        <p>Swarm is a reactive data sync library and middleware. Swarm synchronizes your
-app's model automatically, in real time.</p>
+        <p>This post is mostly a comment to the <a href="http://blog.hood.ie/2013/11/say-hello-to-offline-first/">offline-first manifesto</a>.
+After careful consideration, I am pretty certain that speaking of offline-first
+mobile/web apps is not that useful per se.
+Indeed, these days apps are mostly consumed on wireless devices (laptops,
+tablets, phones), so “offline” really happens. Strictly speaking, that
+even happens to datacenters time to time. But, “offline” is probably a wrong
+word for it. It is much more productive to speak about “intermittent
+connectivity”. Wireless connectivity <em>is</em> unstable just because of the physics.
+There are device handovers, blind spots, mass gatherings, elevators and tonnels.
+A device might be kind of “online”, but it cannot fetch that data right now,
+sorry. Unless we’re considering military applications, “intermittent” reflects
+that point much better.</p>
 
-<p>Why do we make Swarm?  Because new opportunities bring new challenges. Now,
-having all that laptops, smartphones and tablets on WiFi/3G, we need handover
-(aka continuity), real time sync and offline work. Those requirements stressed
-classic request-response HTTP architectures leading to fix-on-a-fix stacks that
-are far from perfection. We have built some apps like that.</p>
+<p>The next step is to accept that intermittent connectivity is just a corner
+case of the “asynchronous”. When we enter an elevator, our app will receive
+its API response one minute late. When a connection is “bad”, the app may receive its response
+ten seconds late. Is it that much different?
+Whether we are formally “online” or “offline” does not
+really matter. If the state changes before we get a response to our request,
+then we <em>are</em> asynchronous. The RPC/HTTP world tries hard to conceal that fact, but
+concealing only works that far.</p>
 
-<p>Our dream is to develop distributed applications like good old local MVC apps,
-by fully delegating the data caching/synchronization magic to a dedicated
-layer. We want to deal with the data uniformly, no matter where it resides. We
-believe, that CRDT is the only approach that allows to fully embrace the
-reality of distributed data.</p>
+<p>Asynchrony is pretty much everywhere in this world and it affects everything.
+In that regard, I recall a nice chat with a customer:</p>
 
-<p>Swarm is a CRDT-based replicated model library (M of MVC) that keeps your data
-correctly cached and synchronized in real time using any storage and transport
-available.</p>
+<blockquote>
+  <p>C: You did a really good job optimizing the app last week! <br />
+I: We did no optimization. By the way, where are you? <br />
+C: I’m in New York. <br />
+I: I see. We have our server there.</p>
+</blockquote>
 
+<p>Mixing synchronous and asynchronous is like mixing beer and vodka: results are
+painful. Whether we speak of “callback hell”, “promises”, or “operational
+transformation”, the underlying tensions are rooted in the fact that we chase
+those two rabbits: synchronous logic and asynchronous communication.</p>
 
+<p>Our current reality is massive amounts of users interacting in real time using
+mobile devices. The process is served by massive amounts of servers also
+interacting in real time. Everything is faulty, everything is distributed.
+Hence, everything is asynchronous.
+Reactive architectures, event buses, eventual consistency and all that new stuff
+reflects one important fact.
+We are on the road out of the Don Knuth’s world of perfect cause-and-effect
+train-of-thought logic towards a new world that is more alike to biological
+signaling pathways: efficient, massive, fault-tolerant and apparently chaotic
+to an untrained eye.</p>
+
+<p>Well then, what “offline first” is useful for? I think, it is a really good
+criteria to evaluate how async-friendly you are. Very much like <a href="http://highscalability.com/blog/2010/12/28/netflix-continually-test-by-failing-servers-with-chaos-monke.html">fire drill</a>
+techniques, running your app offline tests how good you are at handling all the
+zillion varieties of asynchrony simply by taking it to the extreme.</p>
+
+        <div id="disqus_thread"></div><!-- /#disqus_thread -->
       </div><!-- /.entry-content -->
     </div><!-- /.entry-wrapper -->
+    <nav class="pagination" role="navigation">
+      
+        <a href="//swarmdb.net/articles/moscowjs/" class="btn" title="MoscowJS slides">Previous article</a>
+      
+      
+        <a href="//swarmdb.net/articles/android-is-coming/" class="btn" title="Java version is in the works">Next article</a>
+      
+    </nav><!-- /.pagination -->
   </article>
 </div><!-- /#main -->
 
@@ -233,8 +294,28 @@ available.</p>
   ga('send', 'pageview');
 </script>
 
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'swarmjs'; // required: replace example with your forum shortname
 
-          
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+	        
 
 </body>
 </html>

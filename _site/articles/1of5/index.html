@@ -5,31 +5,31 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
 <head>
 <meta charset="utf-8">
-<title>Logs and docs &#8211; Swarm</title>
-<meta name="description" content="How we outdid Google">
+<title>Swarm v 0.4 intro (1/5) &#8211; Swarm</title>
+<meta name="description" content="reactive data sync middleware">
 <meta name="keywords" content="">
 
 <!-- Twitter Cards -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="//swarmdb.net/images/logs-wide.jpg">
+<meta name="twitter:image" content="//swarmdb.net/images/balchik-cafe.jpg">
 
-<meta name="twitter:title" content="Logs and docs">
-<meta name="twitter:description" content="How we outdid Google">
+<meta name="twitter:title" content="Swarm v 0.4 intro (1/5)">
+<meta name="twitter:description" content="reactive data sync middleware">
 <meta name="twitter:creator" content="@swarmsync">
 
 <!-- Open Graph -->
 <meta property="og:locale" content="en_US">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Logs and docs">
-<meta property="og:description" content="How we outdid Google">
-<meta property="og:url" content="//swarmdb.net/articles/on-kreps/">
+<meta property="og:title" content="Swarm v 0.4 intro (1/5)">
+<meta property="og:description" content="reactive data sync middleware">
+<meta property="og:url" content="//swarmdb.net/articles/1of5/">
 <meta property="og:site_name" content="Swarm">
 
 
 
 
 
-<link rel="canonical" href="//swarmdb.net/articles/on-kreps/">
+<link rel="canonical" href="//swarmdb.net/articles/1of5/">
 <link href="//swarmdb.net/feed.xml" type="application/atom+xml" rel="alternate" title="Swarm Feed">
 
 
@@ -122,133 +122,103 @@
 
 <div id="main" role="main">
   <article class="hentry">
-    <img src="//swarmdb.net/images/logs-wide.jpg" class="entry-feature-image" alt="Logs and docs" ><p class="image-credit">Photo Credit: <a href="">V.Grishchenko</a>
+    <img src="//swarmdb.net/images/balchik-cafe.jpg" class="entry-feature-image" alt="Swarm v 0.4 intro (1/5)" >
     <div class="entry-wrapper">
       <header class="entry-header">
         <span class="entry-tags"></span>
         
-          <h1 class="entry-title">Logs and docs</h1>
+          <h1 class="entry-title">Swarm v 0.4 intro (1/5)</h1>
         
       </header>
       <footer class="entry-meta">
         <img src="//swarmdb.net/images/selfie.jpg" alt="Victor Grishchenko photo" class="author-photo">
         <span class="author vcard">By <span class="fn"><a href="//swarmdb.net/about/" title="About Victor Grishchenko">Victor Grishchenko</a></span></span>
-        <span class="entry-date date published"><time datetime="2013-12-17T00:00:00-05:00"><i class="icon-calendar-empty"></i> December 17, 2013</time></span>
-        <span class="entry-date date modified"><time datetime="2013-05-31"><i class="icon-pencil"></i> May 31, 2013</time></span>
+        <span class="entry-date date published"><time datetime="2015-07-02T00:00:00-04:00"><i class="icon-calendar-empty"></i> July 02, 2015</time></span>
+        <span class="entry-date date modified"><time datetime="2015-07-02"><i class="icon-pencil"></i> July 02, 2015</time></span>
         <span class="entry-comments"><i class="icon-comment-alt"></i> <a href="#disqus_thread">Comment</a></span>
-        <span><a href="//swarmdb.net/articles/on-kreps/" rel="bookmark" title="Logs and docs"><i class="icon-link"></i> Permalink</a></span>
+        <span><a href="//swarmdb.net/articles/1of5/" rel="bookmark" title="Swarm v 0.4 intro (1/5)"><i class="icon-link"></i> Permalink</a></span>
         
         <span class="social-share-facebook">
-            <a href="https://www.facebook.com/sharer/sharer.php?u=//swarmdb.net/articles/on-kreps/" title="Share on Facebook" itemprop="Facebook"><i class="icon-facebook-sign"></i> Like</a></span>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=//swarmdb.net/articles/1of5/" title="Share on Facebook" itemprop="Facebook"><i class="icon-facebook-sign"></i> Like</a></span>
         <span class="social-share-twitter">
-            <a href="https://twitter.com/intent/tweet?hashtags=articles&text=Logs and docs&url=//swarmdb.net/articles/on-kreps/&via=swarmsync" title="Share on Twitter" itemprop="Twitter"><i class="icon-twitter-sign"></i> Tweet</a></span>
+            <a href="https://twitter.com/intent/tweet?hashtags=articles&text=Swarm v 0.4 intro (1/5)&url=//swarmdb.net/articles/1of5/&via=swarmsync" title="Share on Twitter" itemprop="Twitter"><i class="icon-twitter-sign"></i> Tweet</a></span>
         <span class="social-share-googleplus">
-            <a href="https://plus.google.com/share?url=//swarmdb.net/articles/on-kreps/" title="Share on Google Plus" itemprop="GooglePlus"><i class="icon-google-plus-sign"></i> +1</a></span>
+            <a href="https://plus.google.com/share?url=//swarmdb.net/articles/1of5/" title="Share on Google Plus" itemprop="GooglePlus"><i class="icon-google-plus-sign"></i> +1</a></span>
             <!-- /.social-share -->
       </footer>
       <div class="entry-content">
-        <p>Jay Kreps of LinkedIn recently made an excellent detailed 
-<a href="http://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying">360° overview post</a>
-explaining why <em>log</em> is an underlying data structure of pretty
-much everything in distributed systems. Well, I feel tempted to add
-that same holds true for collaborative editing (like in Google Docs
-and others). Also, I’d like to point out the relation between
-partially ordered logs, the 
-<a href="http://alistapart.com/article/offline-first">offline</a>-<a href="http://developer.chrome.com/apps/offline_apps.html">first</a>
-approach, <a href="http://en.wikipedia.org/wiki/CAP_theorem">AP</a> systems and the
-so-called Web 3.0 (like in <a href="http://meteor.com/">Meteor</a>,
-<a href="http://pouchdb.com/">pouchdb</a>.
-Any real-time approach to collaborative editing
-decomposes a document into a sequence of atomic operations. The most
-known one is
-<a href="http://en.wikipedia.org/wiki/Operational_transformation">OT</a>,
-also there is
-the WOOT/CRDT based family, including
-<a href="http://bouillon.math.usu.ru/articles/ctre.pdf">CT</a>. GDocs is an OT
-system. I did a CT system currently in beta at 
-<a href="http://letters.yandex.ru">letters.yandex.ru</a>.</p>
+        <p>On its long road from version 0.3 to version 0.4, Swarm changed a lot.
+While Swarm 0.3 was built along the lines of a M-of-MVC JavaScript framework, 0.4 is more like a cross of a NoSQL database, ORM library and a pub/sub service, although it does not fit either category.</p>
 
-<p>Note that
-<em>letters</em> is a tiny pilot project which is totally incomparable
-to GDocs in terms of man-years spent (I expect at least two orders of
-magnitude difference; three is even more likely). Still,
-<em>letters</em> works offline effortlessly from the day one; if your
-WiFi flaps badly, you may not even notice that. GDocs implemented
-offline mode after some years of work and it works sorta conditionally
-(i.e. there are caveats, like a native extension is needed and the
-browser must be Chrome). This villariba-villabajo story definitely
-deserves some explanation.</p>
+<ul>
+  <li>The API is object based, much like in ORM.</li>
+  <li>Once fetched, the data keeps being updated, like in pub/sub.</li>
+  <li>Finally, Swarm supports no SQL :)</li>
+</ul>
 
-<p>In a
-real-time collaborative editor, concurrent operations come “faster”
-than they are propagated so it is no longer possible to pretend there
-is any linear order of events (which doesn’t exist in distributed
-systems anyway). Hence, OT <em>transforms</em> operations to achieve
-the same final text independently of their partial order. Because of
-transformations and cross-dependencies, operations become entangled
-and complexity snowballs.</p>
+<p>Hence, Swarm is safely described as “data sync middleware”.</p>
 
-<p>Meanwhile, the CT borrows some serious tricks from the
-land of hardcore distributed systems, namely (1) 
-<a href="http://www.cs.rutgers.edu/~pxk/417/notes/clocks/index.html">Lamport timestamps</a>
-(2) <a href="http://en.wikipedia.org/wiki/Vector_clock">vector clocks</a>
-and (3) <a href="http://en.wikipedia.org/wiki/Partially_ordered_set">partially ordered</a>
-logs of immutable operations. Attaching a timestamp to every letter
-seems a pipe dream in the beginning, but it works quite well in
-practice. Having 100KB of text instead of 10KB is not a major
-burden. Regarding less-ordered operation logs, Mr Kreps
-mentions them in the context of hardcore AP systems and 
-<a href="http://www.read.seas.harvard.edu/~kohler/class/cs239-w08/decandia07dynamo.pdf">Amazon
-Dynamo</a>
-in particular. These logs are trickier to use as they require
-application-specific reconciliation, but such a system scales much
-much better. (That’s why I’ll never buy MongoDB’s “humongous”
-scalability claims. Turn it that way or another, but MongoDB is a
-single-master system from the <a href="http://blog.mongodb.org/post/475279604/on-distributed-consistency-part-1">C
-corner</a></p>
+<p>I start a series of five posts discussing the project’s objective (1/5), the underlying technology (2/5), its parts and inner workings (3/5), its network protocol (4/5) and exposed APIs (5/5) as of version 0.4 (which is currently available as an <a href="https://github.com/gritzko/swarm/tree/0.4">unstable branch</a> and will hopefully replace 0.3 once we reach post 5/5).</p>
 
-<p>AP techniques let CT handle cases of high
-<a href="http://en.wikipedia.org/wiki/Round-trip_delay_time">RTT</a>
-nicely
-including of course the extreme case of offline work (which means RTT
-of several hours or days essentially). There are several points in a
-CT system where operations from different sources are simply mixed
-together effortlessly and the result is correct.</p>
+<h2 id="objectives">Objectives</h2>
 
-<p>So, let me do some speculation on the future of
-so-called Web 3.0 technologies. WebSocket allows for real-time message
-exchange between a browser and a server; WebStorage and IndexedDB
-allow to keep data at the client and WebRTC let browsers talk to each
-other. These new technologies definitely support the trend of more
-data and more code being pushed closer to the end user and farther
-from the server. But the latter aspect is a great inconvenience.</p>
+<p>Swarm’s mission is to synchronize data in collaborative apps, web and mobile alike. Swarm is the M of MVC. That shapes its very specific feature set:</p>
 
-<p>The first reaction of developers was to
-proxy a database to the client to have a familiar LAMP-like
-architecture inside the browser instead of the server. Well, there are
-two shortcomings here. First, proxying a single-master system to
-zillions of real-world clients actually puts it into the native land
-of AP systems. Which is a round peg, square hole situation. And even
-if we use an AP database, such level of fontend-backend tight coupling
-is not necessarily good. So, I see those as the ugly first
-generation of “Web 3.0” systems.</p>
+<ul>
+  <li>it synchronizes data in real time,</li>
+  <li>it works fine on intermittent internet connections (mobile/wireless),</li>
+  <li>it works with partial datasets (the client can’t have the complete DB).</li>
+</ul>
 
-<p>My bet stays with some sort of AP middleware using
-all the serious tricks inside the browser. As we see from the
-aforementioned <em>letters</em> system, that is perfectly
-feasible. Even in a situation when every keystroke is an event in
-a partially ordered log.</p>
+<p>More on that below.</p>
 
-<p>Interesting times are
-coming.</p>
+<h3 id="real-time">Real-time</h3>
+
+<p>These days, collaborative software tends to sync in real-time as the default. If users share a room or a teleconference, your software has to keep up with the natural speed of events. If you are doing a mobile app, then your app can’t be worse than SMSes and SMSes are pretty much real time already.</p>
+
+<p>Going further on the realtimeness scale, interesting things start to happen. Arguably, Google Docs was the first Web app to experience those effects. Once the timescale of changes starts being smaller than the timescale of change propagation, it gets <em>curiouser and curiouser</em>.</p>
+
+<p>Consider chats. Despite all the experience in building that kind of apps, their sync is imperfect, typically. For example, it is not uncommon to see messages evaporating from Facebook, GTalk or Skype message histories. And chats are just <em>barely</em> realtime.</p>
+
+<p>Well, data syncing is fundamentally hard. Nobody builds their in-house DB or crypto these days. Soon, nobody will risk to build their own sync.</p>
+
+<h3 id="intermittent-connectivity">Intermittent connectivity</h3>
+
+<p>On one hand, “there will be no offline soon”; mobile data is ubiquitous. On the other hand, mobile+wireless means <em>intermittent</em> internet connection. Physics, contention, hardware faults, and hand-overs lead to temporary network unavailability.
+If a user is actually <em>mobile</em> (i.e. walks, holds a device in the hand), then he/she expects that device to be responsive <em>now</em>. That assumes some level of autonomy.</p>
+
+<p>Swarm is able to cache everything it fetches and work off the local data set. Also, it is able to stash changes to sync them later.</p>
+
+<h3 id="partial-datasets">Partial datasets</h3>
+
+<p>The classic DB “dataset replication” ideology assumes the full dataset being copied over and synced. Obviously, that does not work for client-side syncing. A client needs a tiny arbitrary subset of the data.</p>
+
+<p>One popular shortcut is to work with per-user or per-document datasets. That trick shifts the complexity somewhere else, sometimes too much of it.
+A nice example is a simple chat roster (who’s online, who’s offline).
+The overwhelming majority of typical chat app traffic is roster updates. Statuses change more often and their fanout is higher than those of regular chat messages. The problem is, every user needs to see his own subset of “friends”.</p>
+
+<p>Swarm aims to make it <em>straight</em>. There must be no less-synced UI parts. Swarm subscriptions work on the object-by-object basis. All the data fetched keeps being updated.</p>
+
+<h3 id="p2p-sync">P2P sync</h3>
+
+<p>There is a bunch of political, engineering and usability arguments in favor of P2P architectures. Unfortunately, building P2P systems is order of magnitude harder.</p>
+
+<p>Like <em>git</em> repos, Swarm replicas are <em>peers</em>, so there is no master copy.
+As a byproduct, Swarm supports local data caches and P2P serverless sync.  That warrants some level of flexibility and resilience. For example, an on-premises cache can localize an organization’s traffic. Similarly, an on-device caching daemon can sync data locally between applications.</p>
+
+<p>Consider modern smartphones. Their local data cache is virtually unlimited. Meanwhile, mobile data connections are by no means reliable. Given that trade-off, caching and prefetching come in handy. Direct device-to-device sync is also potentially useful.</p>
+
+<p>In the next post , I’ll explain how Swarm achieves those objectives by employing CRDT data types.</p>
 
         <div id="disqus_thread"></div><!-- /#disqus_thread -->
       </div><!-- /.entry-content -->
     </div><!-- /.entry-wrapper -->
     <nav class="pagination" role="navigation">
       
+        <a href="//swarmdb.net/articles/todomvc/" class="btn" title="Swarm.js+React — real-time, offline-ready Holy Grail web apps">Previous article</a>
       
-        <a href="//swarmdb.net/articles/release/" class="btn" title="Swarm 0.3 is released">Next article</a>
+      
+        <a href="//swarmdb.net/articles/2of5/" class="btn" title="Swarm v 0.4 intro. Technology (2/5)">Next article</a>
       
     </nav><!-- /.pagination -->
   </article>

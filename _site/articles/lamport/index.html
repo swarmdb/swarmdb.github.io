@@ -5,31 +5,31 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
 <head>
 <meta charset="utf-8">
-<title>Logs and docs &#8211; Swarm</title>
-<meta name="description" content="How we outdid Google">
+<title>Swarm/Lamport timestamps &#8211; Swarm</title>
+<meta name="description" content="reactive data sync middleware">
 <meta name="keywords" content="">
 
 <!-- Twitter Cards -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="//swarmdb.net/images/logs-wide.jpg">
+<meta name="twitter:image" content="//swarmdb.net/images/teaparty.jpg">
 
-<meta name="twitter:title" content="Logs and docs">
-<meta name="twitter:description" content="How we outdid Google">
+<meta name="twitter:title" content="Swarm/Lamport timestamps">
+<meta name="twitter:description" content="reactive data sync middleware">
 <meta name="twitter:creator" content="@swarmsync">
 
 <!-- Open Graph -->
 <meta property="og:locale" content="en_US">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Logs and docs">
-<meta property="og:description" content="How we outdid Google">
-<meta property="og:url" content="//swarmdb.net/articles/on-kreps/">
+<meta property="og:title" content="Swarm/Lamport timestamps">
+<meta property="og:description" content="reactive data sync middleware">
+<meta property="og:url" content="//swarmdb.net/articles/lamport/">
 <meta property="og:site_name" content="Swarm">
 
 
 
 
 
-<link rel="canonical" href="//swarmdb.net/articles/on-kreps/">
+<link rel="canonical" href="//swarmdb.net/articles/lamport/">
 <link href="//swarmdb.net/feed.xml" type="application/atom+xml" rel="alternate" title="Swarm Feed">
 
 
@@ -122,133 +122,97 @@
 
 <div id="main" role="main">
   <article class="hentry">
-    <img src="//swarmdb.net/images/logs-wide.jpg" class="entry-feature-image" alt="Logs and docs" ><p class="image-credit">Photo Credit: <a href="">V.Grishchenko</a>
+    <img src="//swarmdb.net/images/teaparty.jpg" class="entry-feature-image" alt="Swarm/Lamport timestamps" >
     <div class="entry-wrapper">
       <header class="entry-header">
         <span class="entry-tags"></span>
         
-          <h1 class="entry-title">Logs and docs</h1>
+          <h1 class="entry-title">Swarm/Lamport timestamps</h1>
         
       </header>
       <footer class="entry-meta">
         <img src="//swarmdb.net/images/selfie.jpg" alt="Victor Grishchenko photo" class="author-photo">
         <span class="author vcard">By <span class="fn"><a href="//swarmdb.net/about/" title="About Victor Grishchenko">Victor Grishchenko</a></span></span>
-        <span class="entry-date date published"><time datetime="2013-12-17T00:00:00-05:00"><i class="icon-calendar-empty"></i> December 17, 2013</time></span>
-        <span class="entry-date date modified"><time datetime="2013-05-31"><i class="icon-pencil"></i> May 31, 2013</time></span>
+        <span class="entry-date date published"><time datetime="2014-07-15T00:00:00-04:00"><i class="icon-calendar-empty"></i> July 15, 2014</time></span>
+        <span class="entry-date date modified"><time datetime="2015-09-17"><i class="icon-pencil"></i> September 17, 2015</time></span>
         <span class="entry-comments"><i class="icon-comment-alt"></i> <a href="#disqus_thread">Comment</a></span>
-        <span><a href="//swarmdb.net/articles/on-kreps/" rel="bookmark" title="Logs and docs"><i class="icon-link"></i> Permalink</a></span>
+        <span><a href="//swarmdb.net/articles/lamport/" rel="bookmark" title="Swarm/Lamport timestamps"><i class="icon-link"></i> Permalink</a></span>
         
         <span class="social-share-facebook">
-            <a href="https://www.facebook.com/sharer/sharer.php?u=//swarmdb.net/articles/on-kreps/" title="Share on Facebook" itemprop="Facebook"><i class="icon-facebook-sign"></i> Like</a></span>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=//swarmdb.net/articles/lamport/" title="Share on Facebook" itemprop="Facebook"><i class="icon-facebook-sign"></i> Like</a></span>
         <span class="social-share-twitter">
-            <a href="https://twitter.com/intent/tweet?hashtags=articles&text=Logs and docs&url=//swarmdb.net/articles/on-kreps/&via=swarmsync" title="Share on Twitter" itemprop="Twitter"><i class="icon-twitter-sign"></i> Tweet</a></span>
+            <a href="https://twitter.com/intent/tweet?hashtags=articles&text=Swarm/Lamport timestamps&url=//swarmdb.net/articles/lamport/&via=swarmsync" title="Share on Twitter" itemprop="Twitter"><i class="icon-twitter-sign"></i> Tweet</a></span>
         <span class="social-share-googleplus">
-            <a href="https://plus.google.com/share?url=//swarmdb.net/articles/on-kreps/" title="Share on Google Plus" itemprop="GooglePlus"><i class="icon-google-plus-sign"></i> +1</a></span>
+            <a href="https://plus.google.com/share?url=//swarmdb.net/articles/lamport/" title="Share on Google Plus" itemprop="GooglePlus"><i class="icon-google-plus-sign"></i> +1</a></span>
             <!-- /.social-share -->
       </footer>
       <div class="entry-content">
-        <p>Jay Kreps of LinkedIn recently made an excellent detailed 
-<a href="http://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying">360° overview post</a>
-explaining why <em>log</em> is an underlying data structure of pretty
-much everything in distributed systems. Well, I feel tempted to add
-that same holds true for collaborative editing (like in Google Docs
-and others). Also, I’d like to point out the relation between
-partially ordered logs, the 
-<a href="http://alistapart.com/article/offline-first">offline</a>-<a href="http://developer.chrome.com/apps/offline_apps.html">first</a>
-approach, <a href="http://en.wikipedia.org/wiki/CAP_theorem">AP</a> systems and the
-so-called Web 3.0 (like in <a href="http://meteor.com/">Meteor</a>,
-<a href="http://pouchdb.com/">pouchdb</a>.
-Any real-time approach to collaborative editing
-decomposes a document into a sequence of atomic operations. The most
-known one is
-<a href="http://en.wikipedia.org/wiki/Operational_transformation">OT</a>,
-also there is
-the WOOT/CRDT based family, including
-<a href="http://bouillon.math.usu.ru/articles/ctre.pdf">CT</a>. GDocs is an OT
-system. I did a CT system currently in beta at 
-<a href="http://letters.yandex.ru">letters.yandex.ru</a>.</p>
+        <p><a href="http://en.wikipedia.org/wiki/Lamport_timestamps">Lamport timestamps</a> are necessary to sort out event order and causality
+issues in a distributed system.  The original <a href="http://research.microsoft.com/en-us/um/people/lamport/pubs/time-clocks.pdf">article</a> defines
+Lamport clocks as, essentially, a tuple of a number (plain timestamp) and a
+process id.  Each process stamps its new event with a number, assuming it is
+greater than any previously known timestamp number.  Concurrent events created
+by different processes may have equal timestamp numbers.  Such tie is resolved
+in an arbitrary but consistent way, namely by comparing (unique) process ids.</p>
 
-<p>Note that
-<em>letters</em> is a tiny pilot project which is totally incomparable
-to GDocs in terms of man-years spent (I expect at least two orders of
-magnitude difference; three is even more likely). Still,
-<em>letters</em> works offline effortlessly from the day one; if your
-WiFi flaps badly, you may not even notice that. GDocs implemented
-offline mode after some years of work and it works sorta conditionally
-(i.e. there are caveats, like a native extension is needed and the
-browser must be Chrome). This villariba-villabajo story definitely
-deserves some explanation.</p>
+<p><img src="//swarmdb.net/images/cite-lamport.png" alt="Lamport: total order definition" /></p>
 
-<p>In a
-real-time collaborative editor, concurrent operations come “faster”
-than they are propagated so it is no longer possible to pretend there
-is any linear order of events (which doesn’t exist in distributed
-systems anyway). Hence, OT <em>transforms</em> operations to achieve
-the same final text independently of their partial order. Because of
-transformations and cross-dependencies, operations become entangled
-and complexity snowballs.</p>
+<p>Timing of an event may turn equally useful from the end-user perspective
+(remember that “1m”, “2h” grey labels on Twitter, for example). But, using the
+same timestamp both ways (for causal and wall clock time) is actually quite
+tricky.  On one hand, computer clocks tend to be less precise than necessary,
+especially considering that events propagate by the network with the speed of
+light. That is especially true for end-user computer clock which may be off by
+an hour. On the other hand, logical Lamport time is generally not supposed to
+reflect wall clock time at all; “logical timestamps” means “counters” in most
+of the cases.</p>
 
-<p>Meanwhile, the CT borrows some serious tricks from the
-land of hardcore distributed systems, namely (1) 
-<a href="http://www.cs.rutgers.edu/~pxk/417/notes/clocks/index.html">Lamport timestamps</a>
-(2) <a href="http://en.wikipedia.org/wiki/Vector_clock">vector clocks</a>
-and (3) <a href="http://en.wikipedia.org/wiki/Partially_ordered_set">partially ordered</a>
-logs of immutable operations. Attaching a timestamp to every letter
-seems a pipe dream in the beginning, but it works quite well in
-practice. Having 100KB of text instead of 10KB is not a major
-burden. Regarding less-ordered operation logs, Mr Kreps
-mentions them in the context of hardcore AP systems and 
-<a href="http://www.read.seas.harvard.edu/~kohler/class/cs239-w08/decandia07dynamo.pdf">Amazon
-Dynamo</a>
-in particular. These logs are trickier to use as they require
-application-specific reconciliation, but such a system scales much
-much better. (That’s why I’ll never buy MongoDB’s “humongous”
-scalability claims. Turn it that way or another, but MongoDB is a
-single-master system from the <a href="http://blog.mongodb.org/post/475279604/on-distributed-consistency-part-1">C
-corner</a></p>
+<p>The rich man approach to the problem is to install atomic clocks and satellite
+receivers to datacenters so machine time is very precise.  Then, computer
+clocks become somewhat useful for handling causality/order issues (see Google
+Spanner).</p>
 
-<p>AP techniques let CT handle cases of high
-<a href="http://en.wikipedia.org/wiki/Round-trip_delay_time">RTT</a>
-nicely
-including of course the extreme case of offline work (which means RTT
-of several hours or days essentially). There are several points in a
-CT system where operations from different sources are simply mixed
-together effortlessly and the result is correct.</p>
+<p>Swarm is an operation-based CRDT engine where every event is marked with a
+Lamport timestamp.  In our past projects we used Lamport timestamps literally
+defined as a pair of integers. That approach was not good enough for the
+general case, so finally we settled on the following scheme:</p>
 
-<p>So, let me do some speculation on the future of
-so-called Web 3.0 technologies. WebSocket allows for real-time message
-exchange between a browser and a server; WebStorage and IndexedDB
-allow to keep data at the client and WebRTC let browsers talk to each
-other. These new technologies definitely support the trend of more
-data and more code being pushed closer to the end user and farther
-from the server. But the latter aspect is a great inconvenience.</p>
+<p><img src="//swarmdb.net/images/spec.png" alt="Swarm specifiers (compound event identifiers)" /></p>
 
-<p>The first reaction of developers was to
-proxy a database to the client to have a familiar LAMP-like
-architecture inside the browser instead of the server. Well, there are
-two shortcomings here. First, proxying a single-master system to
-zillions of real-world clients actually puts it into the native land
-of AP systems. Which is a round peg, square hole situation. And even
-if we use an AP database, such level of fontend-backend tight coupling
-is not necessarily good. So, I see those as the ugly first
-generation of “Web 3.0” systems.</p>
+<p>The Lamport timestamp is <code>!8V7N809+Walt~ssn</code>. Both parts of the timestamp are
+different from the “literal” scheme.  First, the “number” component is an
+actual <a href="https://github.com/gritzko/swarm/blob/master/lib/SecondPreciseClock.js#L61">timestamp in base64</a>. <code>8V7N8</code> is 142374344 seconds since 1 Jan
+2010, while <code>09</code> is a sequence number used to create multiple events a second.
+Second, the “process id” is a combination of a user id (like <code>Walt</code>) and a
+session id (like <code>ssn</code>).  It is an extremely useful feature to see the author
+of an event straight from the event id.  Session id is needed to denote
+different sessions of the same user (like Chrome on a home PC and Safari on a
+laptop).  While sessions share same data and same credentials, in terms of the
+Lamport model they are concurrent processes generating independent events.
+These compound timestamps can be compared lexicographically, have all the
+necessary logical timestamp features and (tadaam) provide basic information on
+the event, such as wall clock time and the author id.</p>
 
-<p>My bet stays with some sort of AP middleware using
-all the serious tricks inside the browser. As we see from the
-aforementioned <em>letters</em> system, that is perfectly
-feasible. Even in a situation when every keystroke is an event in
-a partially ordered log.</p>
+<p>That scheme assumes some level of clock synchronization between replicas.
+Practically, web clients with bad clocks must coordinate with their server
+to stay reasonably correct.</p>
 
-<p>Interesting times are
-coming.</p>
+<p>Swarm implements two other timestamp schemes: purely logical LamportClocks
+and MinutePreciseClocks if you do not care about seconds.
+It is up to the developer to pick the most convenient one.</p>
+
+<p>I hope, that explains that slightly unfamiliar look of Lamport timestamps in Swarm.</p>
+
 
         <div id="disqus_thread"></div><!-- /#disqus_thread -->
       </div><!-- /.entry-content -->
     </div><!-- /.entry-wrapper -->
     <nav class="pagination" role="navigation">
       
+        <a href="//swarmdb.net/articles/release/" class="btn" title="Swarm 0.3 is released">Previous article</a>
       
-        <a href="//swarmdb.net/articles/release/" class="btn" title="Swarm 0.3 is released">Next article</a>
+      
+        <a href="//swarmdb.net/articles/moscowjs/" class="btn" title="MoscowJS slides">Next article</a>
       
     </nav><!-- /.pagination -->
   </article>
