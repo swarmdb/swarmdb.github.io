@@ -7,7 +7,7 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="http://swarmdb.net/feed.xml" />
 <link rel="alternate" type="text/html" href="http://swarmdb.net/" />
-<updated>2018-04-20T06:11:11-04:00</updated>
+<updated>2018-04-26T01:49:27-04:00</updated>
 <id>http://swarmdb.net/</id>
 <author>
   <name>Victor Grishchenko</name>
@@ -59,8 +59,8 @@ The opposite approach is to make logical clocks reflect the physical time, like 
 
 &lt;p&gt;That made me use &lt;em&gt;adaptable clock&lt;/em&gt;, a variety of hybrid logical clock that prioritizes logical correctness over physical precision. In case the local clock is not well-synchronized, adaptable clocks may knowingly deviate from the (unknown) physical time to ensure logical correctness. The extent of this deviation is limited by the network round trip time (typically on the order of a tenth of a second). Such an approach leaves the requirement of good clocks for the top servers only. The rest of the replicas simply need clocks with a reasonable skew, which is a practical and &lt;a href=&quot;https://en.wikipedia.org/wiki/LEDBAT&quot;&gt;well-tested&lt;/a&gt; requirement.&lt;/p&gt;
 
-&lt;p&gt;The resulting calendar-friendly &lt;a href=&quot;AdaptableClock.js&quot;&gt;Swarm timestamp format&lt;/a&gt; consumes 64 bits in binary or 11 chars in base64: &lt;code&gt;19Q6IU81001&lt;/code&gt; (mmdHMSssiii, where iii is the sequence number).
-A full two-component &lt;a href=&quot;https://en.wikipedia.org/wiki/Lamport_timestamps&quot;&gt;logical timestamp&lt;/a&gt; features a replica id, e.g. &lt;code&gt;19Q6IU81+kj23&lt;/code&gt;. The alphanumeric order of timestamps fits causality, so the alphanumeric ordering of the log is useful and natural.&lt;/p&gt;
+&lt;p&gt;The resulting calendar-friendly &lt;a href=&quot;AdaptableClock.js&quot;&gt;Swarm timestamp format&lt;/a&gt; consumes 64 bits in binary or 11 chars in base64: &lt;code class=&quot;highlighter-rouge&quot;&gt;19Q6IU81001&lt;/code&gt; (mmdHMSssiii, where iii is the sequence number).
+A full two-component &lt;a href=&quot;https://en.wikipedia.org/wiki/Lamport_timestamps&quot;&gt;logical timestamp&lt;/a&gt; features a replica id, e.g. &lt;code class=&quot;highlighter-rouge&quot;&gt;19Q6IU81+kj23&lt;/code&gt;. The alphanumeric order of timestamps fits causality, so the alphanumeric ordering of the log is useful and natural.&lt;/p&gt;
 
 &lt;h3 id=&quot;logs-and-version-vectors&quot;&gt;Logs and version vectors&lt;/h3&gt;
 
@@ -179,13 +179,13 @@ The latter option is cheaper bandwidth-wise, but slightly expensive in terms of 
 
 &lt;p&gt;The resulting scheme is nicknamed “a shashlyk”:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;0╌╌╌╌┴╌╌┴╌╌╌╌┴╌╌╌╌&amp;gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;0╌╌╌╌┴╌╌┴╌╌╌╌┴╌╌╌╌&amp;gt;
 
 0  &quot;zero&quot; (default) state
 ╌  ops
 ┴  intermediary states
 &amp;gt;  &quot;head&quot; (recentmost) state
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;!-- Fans of streams. Stream of operations (ops)
 Difference from Kafka, etc: per-object streams.
@@ -757,12 +757,12 @@ general case, so finally we settled on the following scheme:&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;http://swarmdb.net/images/spec.png&quot; alt=&quot;Swarm specifiers (compound event identifiers)&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;The Lamport timestamp is &lt;code&gt;!8V7N809+Walt~ssn&lt;/code&gt;. Both parts of the timestamp are
+&lt;p&gt;The Lamport timestamp is &lt;code class=&quot;highlighter-rouge&quot;&gt;!8V7N809+Walt~ssn&lt;/code&gt;. Both parts of the timestamp are
 different from the “literal” scheme.  First, the “number” component is an
-actual &lt;a href=&quot;https://github.com/gritzko/swarm/blob/master/lib/SecondPreciseClock.js#L61&quot;&gt;timestamp in base64&lt;/a&gt;. &lt;code&gt;8V7N8&lt;/code&gt; is 142374344 seconds since 1 Jan
-2010, while &lt;code&gt;09&lt;/code&gt; is a sequence number used to create multiple events a second.
-Second, the “process id” is a combination of a user id (like &lt;code&gt;Walt&lt;/code&gt;) and a
-session id (like &lt;code&gt;ssn&lt;/code&gt;).  It is an extremely useful feature to see the author
+actual &lt;a href=&quot;https://github.com/gritzko/swarm/blob/master/lib/SecondPreciseClock.js#L61&quot;&gt;timestamp in base64&lt;/a&gt;. &lt;code class=&quot;highlighter-rouge&quot;&gt;8V7N8&lt;/code&gt; is 142374344 seconds since 1 Jan
+2010, while &lt;code class=&quot;highlighter-rouge&quot;&gt;09&lt;/code&gt; is a sequence number used to create multiple events a second.
+Second, the “process id” is a combination of a user id (like &lt;code class=&quot;highlighter-rouge&quot;&gt;Walt&lt;/code&gt;) and a
+session id (like &lt;code class=&quot;highlighter-rouge&quot;&gt;ssn&lt;/code&gt;).  It is an extremely useful feature to see the author
 of an event straight from the event id.  Session id is needed to denote
 different sessions of the same user (like Chrome on a home PC and Safari on a
 laptop).  While sessions share same data and same credentials, in terms of the

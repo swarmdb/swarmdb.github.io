@@ -179,12 +179,12 @@ general case, so finally we settled on the following scheme:</p>
 
 <p><img src="//swarmdb.net/images/spec.png" alt="Swarm specifiers (compound event identifiers)" /></p>
 
-<p>The Lamport timestamp is <code>!8V7N809+Walt~ssn</code>. Both parts of the timestamp are
+<p>The Lamport timestamp is <code class="highlighter-rouge">!8V7N809+Walt~ssn</code>. Both parts of the timestamp are
 different from the “literal” scheme.  First, the “number” component is an
-actual <a href="https://github.com/gritzko/swarm/blob/master/lib/SecondPreciseClock.js#L61">timestamp in base64</a>. <code>8V7N8</code> is 142374344 seconds since 1 Jan
-2010, while <code>09</code> is a sequence number used to create multiple events a second.
-Second, the “process id” is a combination of a user id (like <code>Walt</code>) and a
-session id (like <code>ssn</code>).  It is an extremely useful feature to see the author
+actual <a href="https://github.com/gritzko/swarm/blob/master/lib/SecondPreciseClock.js#L61">timestamp in base64</a>. <code class="highlighter-rouge">8V7N8</code> is 142374344 seconds since 1 Jan
+2010, while <code class="highlighter-rouge">09</code> is a sequence number used to create multiple events a second.
+Second, the “process id” is a combination of a user id (like <code class="highlighter-rouge">Walt</code>) and a
+session id (like <code class="highlighter-rouge">ssn</code>).  It is an extremely useful feature to see the author
 of an event straight from the event id.  Session id is needed to denote
 different sessions of the same user (like Chrome on a home PC and Safari on a
 laptop).  While sessions share same data and same credentials, in terms of the

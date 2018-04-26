@@ -175,8 +175,8 @@ The opposite approach is to make logical clocks reflect the physical time, like 
 
 <p>That made me use <em>adaptable clock</em>, a variety of hybrid logical clock that prioritizes logical correctness over physical precision. In case the local clock is not well-synchronized, adaptable clocks may knowingly deviate from the (unknown) physical time to ensure logical correctness. The extent of this deviation is limited by the network round trip time (typically on the order of a tenth of a second). Such an approach leaves the requirement of good clocks for the top servers only. The rest of the replicas simply need clocks with a reasonable skew, which is a practical and <a href="https://en.wikipedia.org/wiki/LEDBAT">well-tested</a> requirement.</p>
 
-<p>The resulting calendar-friendly <a href="AdaptableClock.js">Swarm timestamp format</a> consumes 64 bits in binary or 11 chars in base64: <code>19Q6IU81001</code> (mmdHMSssiii, where iii is the sequence number).
-A full two-component <a href="https://en.wikipedia.org/wiki/Lamport_timestamps">logical timestamp</a> features a replica id, e.g. <code>19Q6IU81+kj23</code>. The alphanumeric order of timestamps fits causality, so the alphanumeric ordering of the log is useful and natural.</p>
+<p>The resulting calendar-friendly <a href="AdaptableClock.js">Swarm timestamp format</a> consumes 64 bits in binary or 11 chars in base64: <code class="highlighter-rouge">19Q6IU81001</code> (mmdHMSssiii, where iii is the sequence number).
+A full two-component <a href="https://en.wikipedia.org/wiki/Lamport_timestamps">logical timestamp</a> features a replica id, e.g. <code class="highlighter-rouge">19Q6IU81+kj23</code>. The alphanumeric order of timestamps fits causality, so the alphanumeric ordering of the log is useful and natural.</p>
 
 <h3 id="logs-and-version-vectors">Logs and version vectors</h3>
 
